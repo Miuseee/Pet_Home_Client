@@ -3,9 +3,30 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 // 2. 配置路由
 const routes: Array<RouteRecordRaw> = [
     {
-        path: "/login",
+        path: "/users/login",
         component: () => import("@/views/LoginView/LoginView.vue"),
     },
+    {
+        path: "/users/home",
+        component: () => import("@/views/HomeView/HomeView.vue"),
+    },
+    {
+        path: "/users/merchanthome",
+        component: () => import("@/views/MerchantHome/MerchantHome.vue"),
+        children: [
+            {
+                path: '/users/merchanthome/cominfo',
+                name: 'cominfo',
+                component: () => import("@/views/HomeView/CommodityInfo/CommodityInfo.vue")
+            },
+            {
+                path: '/users/merchanthome/waitcominfo',
+                name: 'waitcominfo',
+                component: () => import("@/views/HomeView/WaitCommodity/WaitCommodity.vue")
+            }
+        ]
+    },
+
 ];
 // 1.返回一个 router 实列，为函数，里面有配置项（对象） history
 const router = createRouter({

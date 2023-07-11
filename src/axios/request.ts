@@ -1,33 +1,31 @@
-import axios, { AxiosRequestConfig, AxiosInstance, AxiosResponse } from 'axios';
-
-const axiosInstance: AxiosInstance = axios.create({
-    baseURL: 'https://api.example.com/',
-    timeout: 5000,
+import axios from 'axios';
+import { AxiosInstance, AxiosRequestHeaders, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
+const instance: AxiosInstance = axios.create({
+    baseURL: 'http://192.168.35.174:8080', // 根据你的实际需求设置基础 URL
+    timeout: 5000, // 设置请求超时时间
 });
 
-// 添加请求拦截器
-axiosInstance.interceptors.request.use(
-    (config: AxiosRequestConfig) => {
-        // 在发送请求之前做些什么
+instance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+        config.headers = {
+            'Content-Type': 'application/json',
+        } as AxiosRequestHeaders;
         return config;
     },
-    (error: any) => {
-        // 处理请求错误
+    (error) => {
         return Promise.reject(error);
-    },
+    }
 );
 
-// 添加响应拦截器
-axiosInstance.interceptors.response.use(
+instance.interceptors.response.use(
     (response: AxiosResponse) => {
-        // 对响应数据做点什么
-        return response;
+        // 对响应数据做些什么
+        return response.data;
     },
-    (error: any) => {
+    (error) => {
         // 处理响应错误
         return Promise.reject(error);
-    },
+    }
 );
 
-export default axiosInstance;
-
+export default instance;

@@ -1,28 +1,31 @@
-import axiosInstance from './request';
+import request from './request';
 
-export interface ApiResult<T> {
-    code: number;
-    message: string;
-    data: T;
-}
+// export const get = <T>(url: string, params?: any): Promise<T> => {
+//     return request.get(url, { params });
+// };
 
-export async function get<T>(url: string, params?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.get<ApiResult<T>>(url, { params });
-    return response.data;
-}
+// export const post = <T>(url: string, data?: any): Promise<T> => {
+//     return request.post(url, data);
+// };
+export const register = <T>(params?: any): Promise<T> => {
+    return request.get("/merchant/register/", { params });
+};
+export const login = <T>(params?: any): Promise<T> => {
+    // console.log({ params })
+    params = JSON.stringify(params)
+    console.log(params)
+    return request.post("/merchant/login/", params);
+};
+export const getComInfo = <T>(params?: any): Promise<T> => {
 
-export async function post<T>(url: string, data?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.post<ApiResult<T>>(url, data);
-    return response.data;
-}
+    return request.get("/merchant/getcom/" + params);
+};
+export const getWaitComInfo = <T>(params?: any): Promise<T> => {
 
-export async function put<T>(url: string, data?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.put<ApiResult<T>>(url, data);
-    return response.data;
-}
-
-export async function del<T>(url: string, params?: any): Promise<ApiResult<T>> {
-    const response = await axiosInstance.delete<ApiResult<T>>(url, { params });
-    return response.data;
-}
-
+    return request.get("/merchant/getFailcomBymid/" + params);
+};
+export const addCommodity = <T>(params?: any): Promise<T> => {
+    params = JSON.stringify(params)
+    console.log(params)
+    return request.post("/merchant/addition", params);
+};
