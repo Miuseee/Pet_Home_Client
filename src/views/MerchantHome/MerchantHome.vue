@@ -13,7 +13,7 @@
                     <el-col :span="3">
                         <!-- <h5 class="mb-2">增删改查</h5> -->
                         <el-menu default-active="1">
-                            <el-menu-item index="1">
+                            <el-menu-item index="1" @click="gotoUserInfo">
                                 <template #title>
                                     <el-icon>
                                         <location />
@@ -59,6 +59,9 @@ const gotoComInfo = () => {
 }
 const gotoWaitCom = () => {
     router.push("/users/merchanthome/waitcominfo")
+}
+const gotoUserInfo = () => {
+    router.push("/users/merchanthome/personinfo")
 }
 </script>
 <style lang="scss" scoped>

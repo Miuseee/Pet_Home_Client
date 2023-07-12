@@ -1,30 +1,8 @@
 <template>
     <div class="main">
         <el-container>
-            <el-header>
-                <div class="navbar">
-                    <div class="navbarLeft">
-                        <span class="userName">
-                            <strong>Welcome!</strong> Miuseee
-                        </span>
-                    </div>
-                    <div class="navbarRight">
-                        <!-- <span>登录</span>&nbsp;
-                        <span>|</span>&nbsp;
-                        <span>注册</span> -->
-                        退出登录
-                    </div>
-                </div>
-            </el-header>
+            <Navbar></Navbar>
             <el-main>
-                <!-- <div class="search">
-                    <div class="search bar4">
-                        <form>
-                            <input type="text" placeholder="请输入您要搜索的内容...">
-                            <button type="submit">GO!</button>
-                        </form>
-                    </div>
-                </div> -->
                 <Search></Search>
                 <div class="mainTable">
                     <div class="menu">
@@ -46,6 +24,7 @@
 import SideBar from '../../components/SideBar.vue'
 import Swiper from '../../components/Swiper.vue'
 import Search from '../../components/Search.vue'
+import Navbar from '../../components/Navbar.vue';
 import { ref } from 'vue';
 var keyword = ref('')
 const search = () => {
@@ -103,15 +82,12 @@ div {
 }
 
 ::v-deep .el-main {
-    margin-top: 60px;
+    margin-top: 120px;
     background-color: rgb(153, 153, 161);
     display: flex;
     justify-content: center;
     align-items: center;
-
-
-
-
+    height: 80%;
 
     .mainTable {
         display: flex;

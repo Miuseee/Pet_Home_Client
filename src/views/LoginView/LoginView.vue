@@ -1,6 +1,5 @@
 <template>
     <div class="login" v-loading="loading">
-
         <div class="loginbox">
             <Transition name="loginShow">
                 <div class="message" ref="message" v-if="!changeLogToRegister">
@@ -14,6 +13,12 @@
                             <el-input v-model="ruleForm.pass" type="password" placeholder="请输入密码" show-password
                                 autocomplete="off" />
                         </el-form-item>
+                        <div class="my-2 flex items-center text-sm first">
+                            <el-radio-group v-model="radio2" class="ml-4" fill="#FF7F50">
+                                <el-radio label="2">用户</el-radio>
+                                <el-radio label="1">商家</el-radio>
+                            </el-radio-group>
+                        </div>
                         <el-form-item label=" " class="combo">
                             <el-button class="button loginbutton" type="primary" @click="submitForm()">Go!</el-button>
                         </el-form-item>
@@ -36,7 +41,6 @@
 
 
         </div>
-
         <div class="registerbox">
             <Transition name="loginShow">
                 <div class="message1" v-if="changeLogToRegister">
@@ -79,7 +83,6 @@
                     <h1>开始探索！宠物之家</h1>
                 </div>
             </Transition>
-
         </div>
     </div>
 </template>
@@ -88,7 +91,7 @@ import { reactive, ref } from 'vue'
 import router from '@/router/index'
 import { ElMessage } from 'element-plus'//消息提示框
 import type { FormInstance, FormRules } from 'element-plus'
-import { register, login } from '@/axios/api';
+import { register, login, userLogin, userRegister } from '@/axios/api';
 const ruleFormRef = ref<FormInstance>()
 let changeLogToRegister = ref(false)
 let message = ref(null)
@@ -141,8 +144,6 @@ const validateTelJudge = (rule: any, value: string, callback: any) => {
     } else {
         return callback(new Error('手机号格式错误'))
     }
-
-
 }
 let ruleForm = reactive({
     username: '',
@@ -150,9 +151,8 @@ let ruleForm = reactive({
     registerpass: '',
     registerpassjudge: '',
     usertel: '',
-    radio2: 1
+    radio2: 2
 })
-
 const rules = reactive<FormRules<typeof ruleForm>>({
     username: [{ validator: validateUsername, trigger: 'blur' }],
     pass: [{ validator: validatePass, trigger: 'blur' }],
@@ -170,85 +170,123 @@ interface RegisterResponse {  //注册接口来返回数据
     merchantID: any
     // 其他字段...
 }
-const submitForm = async () => {
-    if (ruleForm.pass === '') //注册逻辑
-    {
-        loading.value = true
-        try {
-            const res: RegisterResponse = await register<RegisterResponse>({
-                merchantName: ruleForm.username,
-                password: ruleForm.registerpass,
-                phoneNumber: ruleForm.usertel,
-                state: ruleForm.radio2
-            })
-
-            if (res.code === 101) {
-                ElMessage({
-                    message: '注册成功，马上登录！',
-                    type: 'success',
+const submitForm = async () => {  //提交表单
+    if (radio2.value === '2') {  //用户登陆注册
+        console.log('进入用户登录模块');
+        if (ruleForm.pass !== '') {
+            try {
+                loading.value = true
+                const res: RegisterResponse = await userLogin<RegisterResponse>({
+                    phoneNumber: ruleForm.usertel,
+                    password: ruleForm.pass,
                 })
-                loading.value = false
-                ruleForm.pass = ruleForm.registerpass
-                changeLogToRegister.value = !changeLogToRegister.value
-                return
-            }
-            else if (res.code === 303) {
-                loading.value = false
-                ruleForm.username = '',
-                    ruleForm.usertel = '',
-                    ruleForm.registerpassjudge = '',
-                    ruleForm.registerpass = '',
-                    ruleForm.radio2 = 1
+                console.log(res);
 
+                if (res.code === 101) {
+                    loading.value = false
+                    router.push('/users/home')
+                } else {
+                    loading.value = false
+                    ElMessage.error('登陆失败')
+                }
             }
-            ElMessage.error('有重复的用户名或手机号,请重新输入')
-            return
+            catch (error) {
+                loading.value = false
+                console.error(error);
+            }
         }
-        catch (error) {
-            console.error(error);
-            // message.value = 'Registration failed';
+        else {
+            try {
+                loading.value = true
+                const res: RegisterResponse = await userRegister<RegisterResponse>({
+                    phoneNumber: ruleForm.usertel,
+                    password: ruleForm.registerpass,
+                    username: ruleForm.username,
+                    state: ruleForm.radio2
+                })
+                if (res.code === 1) {
+                    ElMessage({
+                        message: '注册成功，马上登录！',
+                        type: 'success',
+                    })
+                    loading.value = false
+                    ruleForm.pass = ruleForm.registerpass
+                    changeLogToRegister.value = !changeLogToRegister.value
+                    return
+                } else
+                    alert("去你妈的")
+            }
+            catch (error) {
+                loading.value = false
+                console.error(error);
+                // message.value = 'Registration failed';
+            }
         }
-
     }
-    else { //登录逻辑
-        try {
+    else {//商家登陆注册
+        if (ruleForm.pass === '') {
             loading.value = true
-            const res: RegisterResponse = await login<RegisterResponse>({
-                phoneNumber: ruleForm.usertel,
-                password: ruleForm.pass,
-            })
-            if (res.code === 101) {
-                localStorage.setItem("id", res.data.merchantID)
-                loading.value = false
-                router.push('/users/merchanthome')
+            try {
+                const res: RegisterResponse = await register<RegisterResponse>({
+                    merchantName: ruleForm.username,
+                    password: ruleForm.registerpass,
+                    phoneNumber: ruleForm.usertel,
+                    state: ruleForm.radio2
+                })
+                if (res.code === 101) {
+                    ElMessage({
+                        message: '注册成功，马上登录！',
+                        type: 'success',
+                    })
+                    loading.value = false
+                    ruleForm.pass = ruleForm.registerpass
+                    changeLogToRegister.value = !changeLogToRegister.value
+                    return
+                }
+                else if (res.code === 303) {
+                    ruleForm.username = '',
+                        ruleForm.usertel = '',
+                        ruleForm.registerpassjudge = '',
+                        ruleForm.registerpass = '',
+                        ruleForm.radio2 = 1
+                    loading.value = false
+                    ElMessage.error('有重复的用户名或手机号,请重新输入')
+                    return
+                }
+            }
+            catch (error) {
+                console.error(error);
             }
 
         }
-        catch (error) {
-            loading.value = false
-            console.error(error);
-            // message.value = 'Registration failed';
-        }
+        else { //商家登录逻辑
+            try {
+                loading.value = true
+                const res: RegisterResponse = await login<RegisterResponse>({
+                    phoneNumber: ruleForm.usertel,
+                    password: ruleForm.pass,
+                })
+                if (res.code === 101) {
+                    localStorage.setItem("id", res.data.merchantID)
+                    loading.value = false
+                    router.push('/users/merchanthome')
+                    return
+                } else if (res.code === 202) {
+                    ElMessage.error('有重复的用户名或手机号,请重新输入')
+                    return
+                }
+            }
+            catch (error) {
+                loading.value = false
+                console.error(error);
+                // message.value = 'Registration failed';
+            }
 
+        }
     }
-    // if (!formEl) return
-    // formEl.validate((valid) => {
-    //     if (valid) {
-    //         console.log('submit!')
-    //         router.push('/home');
-    //         //登陆成功逻辑
-    //     } else {
-    //         //登陆失败逻辑
-    //         console.log('error submit!')
-    //         resetForm(formEl)
-    //         return false
-    //     }
-    // })
 }
-const change = () => {
-    console.log(message.value)
+const change = () => {  //改变登陆注册
     changeLogToRegister.value = !changeLogToRegister.value
-    // console.log(changeLogToRegister.value);
 }
 
 </script>
@@ -307,8 +345,6 @@ const change = () => {
         }
     }
 }
-
-
 
 ::v-deep .el-input__suffix .el-input__suffix-inner {
     color: green;
@@ -436,16 +472,26 @@ const change = () => {
     .el-radio-group {
         margin-left: 14px;
         margin-bottom: -10px;
-
-
     }
-
-
-
 }
 
 ::v-deep .el-radio__input.is-checked+.el-radio__label {
     color: rgb(150, 57, 156);
+}
+
+::v-deep .first .el-radio-group {
+    margin-left: 13px;
+    margin-top: 5px;
+
+    // background-color: #fff;
+    .el-radio__input.is-checked .el-radio__inner {
+        border-color: #43075f;
+        background-color: rgb(62, 8, 74);
+    }
+
+    .el-radio__input.is-checked+.el-radio__label {
+        color: #fff;
+    }
 }
 
 ::v-deep .el-radio__input.is-checked .el-radio__inner {
@@ -455,10 +501,7 @@ const change = () => {
 
 .loginShow-enter,
 .loginShow-leave-to {
-
     opacity: 0;
-
-
 }
 
 .loginShow-enter-active,

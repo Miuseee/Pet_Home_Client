@@ -15,16 +15,29 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/MerchantHome/MerchantHome.vue"),
         children: [
             {
+                path: '/users/merchanthome/personinfo',
+                name: 'personinfo',
+                component: () => import("@/views/MerchantHome/PersonInfo/PersonInfo.vue")
+            },
+            {
                 path: '/users/merchanthome/cominfo',
                 name: 'cominfo',
-                component: () => import("@/views/HomeView/CommodityInfo/CommodityInfo.vue")
+                component: () => import("@/views/MerchantHome/CommodityInfo/CommodityInfo.vue")
             },
             {
                 path: '/users/merchanthome/waitcominfo',
                 name: 'waitcominfo',
-                component: () => import("@/views/HomeView/WaitCommodity/WaitCommodity.vue")
+                component: () => import("@/views/MerchantHome/WaitCommodity/WaitCommodity.vue")
             }
         ]
+    },
+    {
+        path: "/users/searchview",
+        component: () => import("@/views/HomeView/SearchView/SearchView.vue"),
+    },
+    {
+        path: "/users/card",
+        component: () => import("@/components/CommodityCard.vue"),
     },
 
 ];

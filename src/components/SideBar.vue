@@ -2,47 +2,66 @@
     <div>
         <ul>
             <li v-for="(item, index) in tableData" :key="item.id" :class="{ 'odd-row': index % 2 === 0 }"
-                @mouseenter="showDes(item)" @mouseleave="hideDes(item)">
-                {{ item.breed }}
-                <div class="des" v-if="item.show.value">{{ item.Description }}</div>
+                @mouseenter="showDes(item)" @mouseleave="hideDes(item)" @click="gotoSearchView(item)">
+                {{ item.breedName }}
+                <div class="des" v-if="item.show">{{ item.description }}</div>
             </li>
         </ul>
     </div>
 </template>
   
 <script lang="ts" setup>
-import { ref } from 'vue';
-const tableData = [
+import { ref, onMounted } from 'vue';
+import { searchBreed } from '@/axios/api'
+import router from '@/router';
+onMounted(async () => {
+    try {
+        const res = await searchBreed<string>()  //记得改
+        // console.log("初始", tableData)
+        res.data.forEach((element: any, index: any) => {
+            tableData.value[index] = element
+        });
+    }
+    catch (error) {
+        console.error(error);
+    }
+});
+const tableData = ref([
     {
         id: 1,
-        breed: '主食',
-        Description: "我朝主食",
+        breedName: '主食',
+        description: "我朝主食",
         show: ref(false)
     },
     {
         id: 2,
-        breed: '零食',
-        Description: "我朝零食",
+        breedName: '零食',
+        description: "我朝零食",
         show: ref(false)
     },
     {
         id: 3,
-        breed: '玩具',
-        Description: "我朝玩具",
+        breedName: '玩具',
+        description: "我朝玩具",
         show: ref(false)
     },
     {
         id: 4,
-        breed: '药物',
-        Description: "我朝药物",
+        breedName: '药物',
+        description: "我朝药物",
         show: ref(false)
     },
-]
+])
+const gotoSearchView = (item: any) => {
+    // console.log(item.breedName)
+    localStorage.setItem('breedName', item.breedName)
+    router.push("/users/searchview")
+}
 const showDes = (item: any) => {
-    item.show.value = !item.show.value
+    item.show = !item.show
 }
 const hideDes = (item: any) => {
-    item.show.value = !item.show.value
+    item.show = !item.show
 }
 </script>
 <style  lang="scss" scoped >
