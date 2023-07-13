@@ -33,13 +33,30 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: "/users/searchview",
+        name: "search",
         component: () => import("@/views/HomeView/SearchView/SearchView.vue"),
     },
     {
-        path: "/users/card",
-        component: () => import("@/components/CommodityCard.vue"),
+        path: "/users/person",
+        name: "person",
+        component: () => import("@/views/HomeView/UserInfo/UserInfo.vue"),
     },
-
+    {
+        path: "/users/flymodel",
+        component: () => import("@/components/FlyModel.vue"),
+    },
+    {
+        path: "/users/goodsview",
+        component: () => import("@/views/HomeView/GoodsView/GoodsView.vue"),
+    },
+    {
+        path: "/users/shoppingcart",
+        component: () => import("@/views/HomeView/ShoppingCart/ShoppingCart.vue"),
+    },
+    {
+        path: "/users/order",
+        component: () => import("@/views/HomeView/OrderView/OrderView.vue"),
+    }
 ];
 // 1.返回一个 router 实列，为函数，里面有配置项（对象） history
 const router = createRouter({

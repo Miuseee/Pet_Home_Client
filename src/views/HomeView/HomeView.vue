@@ -2,8 +2,9 @@
     <div class="main">
         <el-container>
             <Navbar></Navbar>
+            <FlyModel></FlyModel>
             <el-main>
-                <Search></Search>
+                <Search @click="search"></Search>
                 <div class="mainTable">
                     <div class="menu">
                         <SideBar></SideBar>
@@ -11,7 +12,7 @@
                     <div class="lunbotu">
                         <Swiper></Swiper>
                     </div>
-                    <div class="menu2">123</div>
+                    <div class="menu2"></div>
                 </div>
             </el-main>
 
@@ -24,11 +25,14 @@
 import SideBar from '../../components/SideBar.vue'
 import Swiper from '../../components/Swiper.vue'
 import Search from '../../components/Search.vue'
-import Navbar from '../../components/Navbar.vue';
+import Navbar from '../../components/NavBar.vue';
+import FlyModel from '@/components/FlyModel.vue';
+import router from '@/router';
 import { ref } from 'vue';
 var keyword = ref('')
 const search = () => {
-    alert('正在搜索')
+
+    router.push({ name: 'search', query: { userId: 123 } });
 }
 </script>
 
@@ -51,9 +55,8 @@ div {
 ::v-deep .el-header {
     position: relative;
     width: 100%;
-    // height: 4.2%;
-    background-color: #e93819;
-    color: #F9F0DA;
+    background: rgba(40, 24, 112, 0.9);
+    color: rgb(247, 227, 198);
     min-width: 1000px;
 
     .navbar {
@@ -83,7 +86,8 @@ div {
 
 ::v-deep .el-main {
     margin-top: 120px;
-    background-color: rgb(153, 153, 161);
+    background: rgb(48, 28, 138, 0.8);
+    // color: rgb(66, 49, 23);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -94,7 +98,8 @@ div {
         width: 75%;
         height: 80%;
         min-width: 720px;
-        background-color: #fafafa;
+        background: rgba(40, 24, 112, 0.6);
+        color: rgb(247, 227, 198);
         padding: 15px 0px;
 
         .menu {

@@ -25,7 +25,7 @@ import { searchCommodity } from '@/axios/api';
 import { ElMessage } from 'element-plus';
 const breedName = ref('');
 breedName.value = localStorage.getItem('breedName');
-const dataArray = reactive([]);
+let dataArray = reactive([]);
 const data = ref([]);
 onMounted(async () => {
     try {
@@ -44,9 +44,18 @@ onMounted(async () => {
 });
 
 const search = async () => {
+    data.value = []
+    dataArray = []
     try {
         const res = await searchCommodity<string>(breedName.value);
-        console.log(res);
+        if (res.code === 5001) {
+            ElMessage({
+                message: '查询成功',
+                type: 'success',
+            });
+            dataArray.push(...res.data);
+            data.value = dataArray;
+        }
     } catch (error) {
         console.error(error);
     }

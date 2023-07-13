@@ -1,8 +1,7 @@
 <template>
-    <div class="card">
+    <div class="card" @click="gotoGoodsView">
         <div class="img">
-            <img src="../assets/image/125047_lg_59ac5bd131.jpg" alt="">
-            {{ imgUrl }}
+            <img :src="imgUrl" alt="">
         </div>
         <div class="name">
             {{ props.item.commodityName }}
@@ -21,7 +20,8 @@
 
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
-import { getMerchantName, getImg } from '@/axios/api'
+import { getMerchantName, getImg, getComName } from '@/axios/api'
+import router from '@/router';
 const props = defineProps({
     item: {
         type: Object,
@@ -30,16 +30,20 @@ const props = defineProps({
 });
 let imgUrl = ref("")
 let merchantName = ref('')
-getMerchantName<string>(Number(localStorage.getItem('id'))).then((res: any) => {
+getMerchantName<string>(Number(props.item.merchantID)).then((res: any) => {
     console.log(res.data);
     merchantName.value = res.data
 })
 getImg<string>(props.item.commodityID).then((res: any) => {
     imgUrl.value = res.data
-    console.log(imgUrl.value);
-
 })
-
+getComName<string>(localStorage.getItem).then((res: any) => {
+    imgUrl.value = res.data
+})
+const gotoGoodsView = () => {
+    localStorage.setItem("commodityID", props.item.commodityID)
+    router.push('/users/goodsview')
+}
 
 </script>
 
@@ -105,6 +109,7 @@ getImg<string>(props.item.commodityID).then((res: any) => {
 
 .card:hover {
     box-shadow: inset 0 0 3px #000;
+    cursor: pointer;
     // transform: scaleX(0.99) scaleY(0.99);
 }
 </style>

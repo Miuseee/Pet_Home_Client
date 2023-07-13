@@ -183,6 +183,7 @@ const submitForm = async () => {  //提交表单
                 console.log(res);
 
                 if (res.code === 101) {
+                    localStorage.setItem('userID', res.data.userID)
                     loading.value = false
                     router.push('/users/home')
                 } else {
@@ -234,6 +235,8 @@ const submitForm = async () => {  //提交表单
                     state: ruleForm.radio2
                 })
                 if (res.code === 101) {
+                    console.log(res);
+
                     ElMessage({
                         message: '注册成功，马上登录！',
                         type: 'success',
@@ -266,6 +269,8 @@ const submitForm = async () => {  //提交表单
                     phoneNumber: ruleForm.usertel,
                     password: ruleForm.pass,
                 })
+                console.log(res);
+
                 if (res.code === 101) {
                     localStorage.setItem("id", res.data.merchantID)
                     loading.value = false

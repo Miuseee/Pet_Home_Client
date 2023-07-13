@@ -1,5 +1,12 @@
 <template>
     <div>
+        <el-form :inline="true" :model="failedSearch" class="demo-form-inline">
+
+            <el-form-item>
+                <el-input v-model="failedSearch" placeholder="请输入商品名称搜索..."></el-input>
+                <el-button type="primary" @click="Search">搜索</el-button>
+            </el-form-item>
+        </el-form>
         <el-table :data="items" style="margin-top: 20px" v-loading="loading">
             <el-table-column prop="name" label="商品名称"></el-table-column>
             <el-table-column prop="price" label="商品价格"></el-table-column>
@@ -66,8 +73,9 @@
 import { reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { onMounted } from 'vue'
-import { getWaitComInfo, addImage, deleteCommodity } from '@/axios/api'
+import { getWaitComInfo, addImage, deleteCommodity, searchByComNameFail } from '@/axios/api'
 import { UploadFilled } from '@element-plus/icons-vue'
+let failedSearch = ref("");
 const dialogVisible = ref(false)
 let imageUrlCode = ref(0)
 let imageUrl = ref('')
@@ -209,6 +217,40 @@ const uploadImage = (row: any) => {
 
 
 
+}
+const Search = () => {
+    if (failedSearch == null) {
+        ElMessage.error('请输入正确的商品名字');
+        return;
+    }
+    else {
+        localStorage.getItem('id');
+        searchByComNameFail<string>({
+            merchantID: localStorage.getItem('id'),
+            commodityName: failedSearch.value
+        }).then((res: any) => {
+            if (res.code === 5001) {
+                ElMessage({
+                    message: '添加成功，请上传图片',
+                    type: 'success',
+                })
+                res.data.forEach((element: any, index: any) => {
+                    if (index >= items.length) {
+                        items.push({ name: '', price: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
+                    }
+                    items[index].name = element.commodityName
+                    items[index].price = element.price
+                    items[index].breedname = element.breedName
+                    items[index].description = element.gender
+                    items[index].commodityID = element.commodityID
+                });
+                let len = items.length
+                for (let i = res.data.length; i < len; i++) {
+                    items.pop()
+                }
+            }
+        })
+    }
 }
 </script>
   

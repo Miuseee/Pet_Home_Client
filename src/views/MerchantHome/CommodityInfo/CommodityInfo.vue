@@ -1,5 +1,12 @@
 <template>
     <div>
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+
+            <el-form-item>
+                <el-input v-model="formInline" placeholder="请输入商品名称搜索..."></el-input>
+                <el-button type="primary" @click="Search">搜索</el-button>
+            </el-form-item>
+        </el-form>
         <el-form :model="formData" inline>
             <el-form-item label="商品名称">
                 <el-input v-model="formData.name" placeholder="请输入商品名称"></el-input>
@@ -56,9 +63,10 @@
 import { reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { onMounted } from 'vue'
-import { getComInfo, addCommodity, deleteCommodity, updateCommodity } from '@/axios/api'
+import { getComInfo, addCommodity, deleteCommodity, updateCommodity, searchByComName } from '@/axios/api'
 import router from '@/router';
 let loading = ref(true)
+let formInline = ref("");
 onMounted(async () => {
     try {
         const res = await getComInfo<string>(localStorage.getItem("id"))  //记得改
@@ -179,7 +187,6 @@ const saveItem = (item: Item) => {
             sure: 1
         }).then((res: any) => {
             console.log(res);
-
             if (res.code === 4001) {
                 editDialogVisible.value = false;
                 ElMessage.success('商品更新成功');
@@ -200,8 +207,6 @@ const saveItem = (item: Item) => {
 };
 
 const deleteItem = (item: Item) => {
-
-
     ElMessageBox.confirm('确定要删除该商品吗？', '确认', {
         type: 'warning'
     })
@@ -226,6 +231,40 @@ const deleteItem = (item: Item) => {
 const showImage = () => {
     console.log(123);
 
+};
+const Search = () => {
+    if (formInline == null) {
+        ElMessage.error('请输入正确的商品名字');
+        return;
+    }
+    else {
+        localStorage.getItem('id');
+        searchByComName<string>({
+            merchantID: localStorage.getItem('id'),
+            commodityName: formInline.value
+        }).then((res: any) => {
+            if (res.code === 5001) {
+                ElMessage({
+                    message: '添加成功，请上传图片',
+                    type: 'success',
+                })
+                res.data.forEach((element: any, index: any) => {
+                    if (index >= items.length) {
+                        items.push({ name: '', price: 0, status: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
+                    }
+                    items[index].name = element.commodityName
+                    items[index].price = element.price
+                    items[index].breedname = element.breedName
+                    items[index].description = element.gender
+                    items[index].commodityID = element.commodityID
+                });
+                let len = items.length
+                for (let i = res.data.length; i < len; i++) {
+                    items.pop()
+                }
+            }
+        })
+    }
 }
 </script>
   

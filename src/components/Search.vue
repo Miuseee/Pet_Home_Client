@@ -83,13 +83,15 @@ button {
 }
 
 .bar4 {
-    background: #F15B42;
+    background: rgba(25, 7, 54, 0.6);
+    color: rgb(247, 227, 198);
     border-radius: 30px;
 }
 
 .bar4 .form {
-    background: #F9F0DA;
-    border: 1px solid #BE290E;
+    background: rgba(254, 254, 254, 0.9); // border: 2px solid black;
+    border: 1px solid #40354a;
+    // box-shadow: inset1px 1px 1px red;
     border-radius: 30px;
 }
 
@@ -103,15 +105,17 @@ button {
     position: absolute;
     top: 0px;
     right: 0;
-    background-color: #BE290E;
-    color: #fafafa;
+    background: rgb(124, 75, 180);
+    color: white;
+    // border: 2px solid black;
     // border-bottom: 2px solid #F9F0DA;
+    transition: 0.3s;
 }
 
 .bar4 button:hover {
 
-    background-color: #fafafa;
-    color: #BE290E;
+    background-color: #fbfafb;
+    color: #000000;
 
 }
 </style>

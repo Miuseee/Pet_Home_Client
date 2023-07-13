@@ -36,18 +36,52 @@ export const phoneVertify = <T>(params?: any): Promise<T> => {  //手机验证
 export const deleteCommodity = <T>(params?: any): Promise<T> => {  //删除商品
     return request.delete("/merchant/Delete/" + params);
 };
-export const updateCommodity = <T>(params?: any): Promise<T> => {  //删除商品
+export const updateCommodity = <T>(params?: any): Promise<T> => {  //更新商品
     params = JSON.stringify(params)
     console.log(params)
     return request.put("/merchant/update/commodity", params);
 };
-export const getMerchantName = <T>(params?: any): Promise<T> => {  //删除商品
+export const getMerchantName = <T>(params?: any): Promise<T> => {  //获取商家名
     params = JSON.stringify(params)
     return request.get("admins/getonename/" + params);
 };
-export const getImg = <T>(params?: any): Promise<T> => {  //删除商品
+export const getImg = <T>(params?: any): Promise<T> => {  //获取商品图片
     params = JSON.stringify(params)
     return request.get("/images/getImage/" + params);
+};
+export const getComName = <T>(params?: any): Promise<T> => {  //获取商品名字
+    // params = JSON.stringify(params)
+    return request.get("/commodity/getbyid/" + params);
+};
+export const getBreedName = <T>(params?: any): Promise<T> => {  //获取品类名字
+    // params = JSON.stringify(params)
+    return request.get("/breeds/getbyID/" + params);
+};
+export const addToShoppingCart = <T>(params?: any): Promise<T> => {  //添加至购物车
+    params = JSON.stringify(params)
+    return request.post("/shoppingcart/add", params);
+};
+export const searchShoppingCart = <T>(params?: any): Promise<T> => {
+    return request.get("/shoppingcart/st/" + params);
+};
+export const addReview = <T>(params?: any): Promise<T> => {
+    params = JSON.stringify(params)
+    return request.post("/reviews/addreviews", params);
+};
+export const searchByComName = <T>(params?: any): Promise<T> => {      //查找商品通过名字
+    params = JSON.stringify(params)
+    console.log(params)
+    return request.post("/commodity/searchByName/", params);
+};
+export const searchByComNameFail = <T>(params?: any): Promise<T> => {      //查找商品通过名字
+    params = JSON.stringify(params)
+    console.log(params)
+    return request.post("/commodity/searchByNameFailed/", params);
+};
+export const MerchantRecode = <T>(params?: any): Promise<T> => {  //商家修改密码
+    params = JSON.stringify(params)
+    console.log(params)
+    return request.put("/merchant/updata", params);
 };
 //邹佳后端
 export const userLogin = <T>(params?: any): Promise<T> => {

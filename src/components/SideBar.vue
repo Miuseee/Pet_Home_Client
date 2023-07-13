@@ -77,18 +77,20 @@ ul {
         margin-left: 20px;
         width: 120px;
         text-align: left;
+        border: 1px solid white;
     }
 
     li:hover {
         cursor: pointer;
         background-color: lightgray;
+        color: black;
         transition: .25s ease;
     }
 }
 
 .odd-row {
-    background-color: rgb(113, 109, 109);
-    color: white;
+    background: rgba(20, 9, 116, 0.6);
+    color: rgb(247, 227, 198);
 }
 
 .des {
