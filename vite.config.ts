@@ -9,4 +9,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src/'),
     }
   },
+  base: 'http://192.168.20.174/',
 })

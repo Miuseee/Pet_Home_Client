@@ -38,8 +38,6 @@
                     </h2>
                 </div>
             </Transition>
-
-
         </div>
         <div class="registerbox">
             <Transition name="loginShow">
@@ -180,10 +178,10 @@ const submitForm = async () => {  //提交表单
                     phoneNumber: ruleForm.usertel,
                     password: ruleForm.pass,
                 })
-                console.log(res);
-
                 if (res.code === 101) {
                     localStorage.setItem('userID', res.data.userID)
+                    localStorage.setItem('userName', res.data.username)
+                    localStorage.setItem('phone', res.data.phoneNumber)
                     loading.value = false
                     router.push('/users/home')
                 } else {
@@ -205,7 +203,9 @@ const submitForm = async () => {  //提交表单
                     username: ruleForm.username,
                     state: ruleForm.radio2
                 })
-                if (res.code === 1) {
+                console.log(res);
+
+                if (res.code === 101) {
                     ElMessage({
                         message: '注册成功，马上登录！',
                         type: 'success',
@@ -214,8 +214,11 @@ const submitForm = async () => {  //提交表单
                     ruleForm.pass = ruleForm.registerpass
                     changeLogToRegister.value = !changeLogToRegister.value
                     return
-                } else
-                    alert("去你妈的")
+                } else {
+                    alert("注册失败")
+                    loading.value = false
+                }
+
             }
             catch (error) {
                 loading.value = false
@@ -227,16 +230,16 @@ const submitForm = async () => {  //提交表单
     else {//商家登陆注册
         if (ruleForm.pass === '') {
             loading.value = true
+            alert(ruleForm.radio2);
+
             try {
                 const res: RegisterResponse = await register<RegisterResponse>({
                     merchantName: ruleForm.username,
                     password: ruleForm.registerpass,
                     phoneNumber: ruleForm.usertel,
-                    state: ruleForm.radio2
+                    state: ruleForm.radio2 - 1
                 })
                 if (res.code === 101) {
-                    console.log(res);
-
                     ElMessage({
                         message: '注册成功，马上登录！',
                         type: 'success',
@@ -269,7 +272,7 @@ const submitForm = async () => {  //提交表单
                     phoneNumber: ruleForm.usertel,
                     password: ruleForm.pass,
                 })
-                console.log(res);
+                console.log("我朝李超！！！", res);
 
                 if (res.code === 101) {
                     localStorage.setItem("id", res.data.merchantID)
@@ -277,7 +280,8 @@ const submitForm = async () => {  //提交表单
                     router.push('/users/merchanthome')
                     return
                 } else if (res.code === 202) {
-                    ElMessage.error('有重复的用户名或手机号,请重新输入')
+                    loading.value = false
+                    ElMessage.error('账号或密码错误')
                     return
                 }
             }

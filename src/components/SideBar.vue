@@ -96,7 +96,7 @@ ul {
 .des {
     position: absolute;
     color: black;
-    left: 120px;
+    left: -30px;
     margin-top: -22px;
 }
 </style>

@@ -42,8 +42,8 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/HomeView/UserInfo/UserInfo.vue"),
     },
     {
-        path: "/users/flymodel",
-        component: () => import("@/components/FlyModel.vue"),
+        path: "/users/scrollbar",
+        component: () => import("@/components/ScrollBar.vue"),
     },
     {
         path: "/users/goodsview",
@@ -56,6 +56,14 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: "/users/order",
         component: () => import("@/views/HomeView/OrderView/OrderView.vue"),
+    },
+    {
+        path: "/users/calculate",
+        component: () => import("@/views/HomeView/CalculateView/CalculateView.vue"),
+    },
+    {
+        path: "/users/test",
+        component: () => import("@/components/test.vue"),
     }
 ];
 // 1.返回一个 router 实列，为函数，里面有配置项（对象） history

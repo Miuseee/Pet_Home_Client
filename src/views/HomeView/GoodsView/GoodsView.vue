@@ -4,7 +4,7 @@
             <div class="viewimg">
                 <!-- <img src="https://img13.360buyimg.com/n1/jfs/t1/156037/31/36839/100412/64585c37F5b705105/e012e6725083a6aa.jpg"
                 alt=""> -->
-                <img :src="data.imgUrl" alt="">
+                <img :src="data.imgUrl" alt="" style="width: 300px;height:300px ;">
             </div>
             <div class="viewintro">
                 <div class="title">
@@ -26,9 +26,7 @@
         </div>
         <div class="review">
             <div class="form">
-                <div class="input">
-                    <el-input v-model="textarea" :rows="2" type="textarea" placeholder="Please input" />
-                </div>
+                123
             </div>
         </div>
     </div>

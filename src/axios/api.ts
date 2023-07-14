@@ -1,3 +1,4 @@
+import { log } from 'console';
 import request from './request';
 
 //朱悦凯后端
@@ -9,8 +10,8 @@ export const login = <T>(params?: any): Promise<T> => {
     console.log(params)
     return request.post("/merchant/login/", params);
 };
-export const getComInfo = <T>(params?: any): Promise<T> => {        //商品列表
-    return request.get("/merchant/getcom/" + params);
+export const getComInfo = <T>(params?: any, params2?: any): Promise<T> => {        //商品列表
+    return request.get("/commodity/getcomBymidPage/" + params + '/' + params2);
 };
 export const getWaitComInfo = <T>(params?: any): Promise<T> => {    //待审核列表
     console.log(params)
@@ -50,7 +51,6 @@ export const getImg = <T>(params?: any): Promise<T> => {  //获取商品图片
     return request.get("/images/getImage/" + params);
 };
 export const getComName = <T>(params?: any): Promise<T> => {  //获取商品名字
-    // params = JSON.stringify(params)
     return request.get("/commodity/getbyid/" + params);
 };
 export const getBreedName = <T>(params?: any): Promise<T> => {  //获取品类名字
@@ -73,6 +73,10 @@ export const searchByComName = <T>(params?: any): Promise<T> => {      //查找�
     console.log(params)
     return request.post("/commodity/searchByName/", params);
 };
+export const searchByComNameUser = <T>(params?: any): Promise<T> => {      //查找商品通过名字
+    return request.get("/commodity/mohu", params);
+};
+
 export const searchByComNameFail = <T>(params?: any): Promise<T> => {      //查找商品通过名字
     params = JSON.stringify(params)
     console.log(params)
@@ -82,6 +86,19 @@ export const MerchantRecode = <T>(params?: any): Promise<T> => {  //商家修改
     params = JSON.stringify(params)
     console.log(params)
     return request.put("/merchant/updata", params);
+};
+export const addOrder = <T>(params?: any): Promise<T> => {  //提交订单
+    params = JSON.stringify(params)
+    const parsedObject = JSON.parse(params);
+    let mapArray = parsedObject.map;
+    mapArray = JSON.stringify(mapArray)
+    return request.post("/shoppingcart/addtoorder", mapArray);
+};
+export const searchAddress = <T>(params?: any): Promise<T> => {  //查询地址
+    return request.get("/shippingaddresses/get/" + params);
+};
+export const logOut = <T>(): Promise<T> => {  //退出登录
+    return request.get("/merchant/Logout");
 };
 //邹佳后端
 export const userLogin = <T>(params?: any): Promise<T> => {

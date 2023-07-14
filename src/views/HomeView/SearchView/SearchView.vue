@@ -4,7 +4,7 @@
         <div class="search">
             <div class="search bar4">
                 <div class="form">
-                    <input type="text" v-model="breedName" placeholder="请输入您要搜索的内容...">
+                    <input type="text" v-model="commodityName" placeholder="请输入您要搜索的内容...">
                     <button type="submit" @click="search">GO!</button>
                 </div>
             </div>
@@ -15,18 +15,22 @@
             </div>
         </div>
     </div>
+    <el-skeleton v-if="show" :rows="16" animated style="position: absolute;width: 1173px;margin: 160px 130px;" />
 </template>
   
 <script lang="ts" setup>
 import { ref, onMounted, reactive } from 'vue';
 import NavBar from '@/components/NavBar.vue';
 import CommodityCard from '@/components/CommodityCard.vue';
-import { searchCommodity } from '@/axios/api';
+import { searchCommodity, searchByComNameUser } from '@/axios/api';
 import { ElMessage } from 'element-plus';
 const breedName = ref('');
 breedName.value = localStorage.getItem('breedName');
 let dataArray = reactive([]);
 const data = ref([]);
+let show = ref(true)
+let commodityName = ref('')
+
 onMounted(async () => {
     try {
         const res = await searchCommodity<string>(breedName.value);
@@ -37,6 +41,7 @@ onMounted(async () => {
             });
             dataArray.push(...res.data);
             data.value = dataArray;
+            show.value = false
         }
     } catch (error) {
         console.error(error);
@@ -47,13 +52,21 @@ const search = async () => {
     data.value = []
     dataArray = []
     try {
-        const res = await searchCommodity<string>(breedName.value);
-        if (res.code === 5001) {
+        const res = await searchByComNameUser<string>({
+            params: {
+                page: '1',
+                pageSize: '10',
+                name: commodityName.value
+            }
+        });
+        console.log(res.data.records)
+        if (res.code === 101) {
             ElMessage({
                 message: '查询成功',
                 type: 'success',
-            });
-            dataArray.push(...res.data);
+            }
+            );
+            dataArray.push(...res.data.records);
             data.value = dataArray;
         }
     } catch (error) {
@@ -68,7 +81,7 @@ const search = async () => {
     top: 160px;
     left: 130px;
     width: 1173px;
-    background-color: lightblue;
+    background-color: rgb(215, 215, 215);
 }
 
 .card-container {
@@ -76,6 +89,7 @@ const search = async () => {
     flex-wrap: wrap;
     justify-content: flex-start;
     // gap: 20px;
+    overflow: hidden;
 }
 
 div.search {
@@ -136,7 +150,6 @@ button {
 }
 
 .bar4 button:hover {
-
     background-color: #fafafa;
     color: #BE290E;
 

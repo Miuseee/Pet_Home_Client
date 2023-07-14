@@ -35,7 +35,7 @@ const gotoShoppingCart = () => {
 .flymodel {
     position: fixed;
     top: 180px;
-    right: 270px;
+    right: 180px;
     width: 50px;
     height: 180px;
     border-radius: 30px;

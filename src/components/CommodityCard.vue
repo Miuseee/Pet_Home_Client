@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { defineProps, ref } from 'vue'
-import { getMerchantName, getImg, getComName } from '@/axios/api'
+import { getMerchantName, getImg } from '@/axios/api'
 import router from '@/router';
 const props = defineProps({
     item: {
@@ -31,31 +31,27 @@ const props = defineProps({
 let imgUrl = ref("")
 let merchantName = ref('')
 getMerchantName<string>(Number(props.item.merchantID)).then((res: any) => {
-    console.log(res.data);
     merchantName.value = res.data
 })
 getImg<string>(props.item.commodityID).then((res: any) => {
-    imgUrl.value = res.data
-})
-getComName<string>(localStorage.getItem).then((res: any) => {
     imgUrl.value = res.data
 })
 const gotoGoodsView = () => {
     localStorage.setItem("commodityID", props.item.commodityID)
     router.push('/users/goodsview')
 }
-
 </script>
 
 <style scoped lang="scss">
 .card {
     display: inline-block;
+    margin-top: 5px;
     margin-left: 5px;
     margin-right: 5px;
     margin-bottom: 10px;
     width: 185.4px;
     height: 285px;
-    background-color: red;
+    background-color: rgb(237, 236, 236);
     overflow: hidden;
     box-sizing: border-box;
 

@@ -16,15 +16,34 @@
                 <template #default="{ row }">
                     <el-button type="text" size="mini" @click="editItem(row)">编辑</el-button>
                     <el-button type="text" size="mini" @click="deleteItem(row)">删除</el-button>
-                    <el-button @click="uploadImage(row)">上传图片</el-button>
+                    <el-button v-if="isUpload === 1 ? true : false" @click="uploadImage(row)">上传图片</el-button>
+                    <el-button v-if="isUpload === 0 ? true : false" @click="showImage(row)">
+                        查看图片
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <el-dialog v-model="centerDialogVisible" title="查看图片" width="30%" center>
+            <span>
+                <div class="demo-image__preview">
+                    <el-image style="width: 100px; height: 100px;margin: 0 135px;" :src="url" :zoom-rate="1.2"
+                        :preview-src-list="srcList" :initial-index="4" fit="cover" />
+                </div>
+            </span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="centerDialogVisible = false">Cancel</el-button>
+                    <el-button type="primary" @click="centerDialogVisible = false">
+                        Confirm
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
         <el-dialog v-model="dialogVisible" title="Tips" width="30%" :before-close="handleClose">
             <span>
                 <div class="uploadimg">
                     <el-upload class="upload-demo" drag :on-success="successUpload"
-                        action="http://192.168.35.174:8080/upload" method="post" name="image" multiple>
+                        action="http://192.168.20.174:8080/upload" method="post" name="image" multiple>
                         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                         <div class="el-upload__text">
                             拖曳 <em>或点击上传</em>
@@ -73,22 +92,25 @@
 import { reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { onMounted } from 'vue'
-import { getWaitComInfo, addImage, deleteCommodity, searchByComNameFail } from '@/axios/api'
+import { getWaitComInfo, addImage, deleteCommodity, searchByComNameFail, getImg } from '@/axios/api'
 import { UploadFilled } from '@element-plus/icons-vue'
 let failedSearch = ref("");
+let isUpload = ref(1)
 const dialogVisible = ref(false)
 let imageUrlCode = ref(0)
 let imageUrl = ref('')
 let ready = ref(false)
+let url = ref('https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg')
+const centerDialogVisible = ref(false)
+let srcList = ref([
+    'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+])
 onMounted(async () => {
     try {
         const res = await getWaitComInfo<string>(localStorage.getItem("id"))
-        console.log(res);
-
         if (res.code === 5002) {
             loading.value = false
             items.length = 0
-
             return
         }
         loading.value = false
@@ -132,9 +154,7 @@ const editFormData = reactive({
 const editDialogVisible = ref(false);
 
 let items = reactive([{ name: '', price: 0, breedname: '', description: '', commodityID: 0 }]);
-const showImage = () => {
-    dialogVisible.value = !dialogVisible.value
-}
+
 
 const handleClose = (done: () => void) => {
     ElMessageBox.confirm('Are you sure to close this dialog?')
@@ -203,8 +223,12 @@ const uploadImage = (row: any) => {
                 commodityID: row.commodityID,
                 imageURL: imageUrl.value
             }).then((res: any) => {
-                if (res.code === 101)
+                if (res.code === 101) {
+                    isUpload.value = 0
                     ElMessage.success('上传成功');
+
+                }
+
                 else
                     ElMessage.error('上传失败')
             })
@@ -252,6 +276,14 @@ const Search = () => {
         })
     }
 }
+const showImage = (row: any) => {
+    centerDialogVisible.value = true
+    getImg<string>(row.commodityID).then((res: any) => {
+        url.value = res.data
+        srcList.value[0] = res.data
+    })
+
+};
 </script>
   
 <style>

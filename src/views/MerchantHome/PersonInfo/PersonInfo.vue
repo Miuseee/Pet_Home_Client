@@ -41,11 +41,9 @@
                 </el-form-item>
             </el-form>
         </div>
-
         <div class="step3" v-show="step === '3' ? true : false">
             修改密码成功，请返回首页！
         </div>
-
     </div>
 </template>
   
@@ -85,7 +83,6 @@ const sendVerificationCode = () => {
     }, 1000);
     phoneVertify<string>(formData.value.phone)
         .then((res: any) => {
-
             code.value = String(res)
             console.log(res)
             console.log(code.value)

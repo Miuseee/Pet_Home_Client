@@ -15,7 +15,10 @@
                 <el-input v-model="formData.price" placeholder="请输入商品价格"></el-input>
             </el-form-item>
             <el-form-item label="商品类别">
-                <el-input v-model="formData.breedname" placeholder="请输入商品类别"></el-input>
+                <!-- <el-input v-model="formData.breedname" placeholder="请输入商品类别"></el-input> -->
+                <el-select v-model="formData.breedname" class="m-2" placeholder="Select">
+                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
             </el-form-item>
             <el-form-item label="商品描述">
                 <el-input v-model="formData.description" placeholder="请输入商品描述"></el-input>
@@ -33,10 +36,32 @@
                 <template #default="{ row }">
                     <el-button type="text" size="mini" @click="editItem(row)">编辑</el-button>
                     <el-button type="text" size="mini" @click="deleteItem(row)">删除</el-button>
-                    <el-button @click="showImage">查看图片</el-button>
+                    <el-button @click="showImage(row)">
+                        查看图片
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <div class="example-pagination-block">
+            <el-pagination layout="prev, pager, next" :total="50" :current-page="page"
+                @current-change="handleCurrentChange" />
+        </div>
+        <el-dialog v-model="centerDialogVisible" title="查看图片" width="30%" center>
+            <span>
+                <div class="demo-image__preview">
+                    <el-image style="width: 100px; height: 100px;margin: 0 135px;" :src="url" :zoom-rate="1.2"
+                        :preview-src-list="srcList" :initial-index="4" fit="cover" />
+                </div>
+            </span>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="centerDialogVisible = false">Cancel</el-button>
+                    <el-button type="primary" @click="centerDialogVisible = false">
+                        Confirm
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
         <el-dialog v-model="editDialogVisible" title="编辑商品">
             <el-form :model="editFormData" inline>
                 <el-form-item label="商品名称">
@@ -63,33 +88,56 @@
 import { reactive, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { onMounted } from 'vue'
-import { getComInfo, addCommodity, deleteCommodity, updateCommodity, searchByComName } from '@/axios/api'
+import { getComInfo, addCommodity, deleteCommodity, updateCommodity, searchByComName, getImg, searchBreed, getBreedName } from '@/axios/api'
 import router from '@/router';
+let url = ref('https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg')
+const centerDialogVisible = ref(false)
+let srcList = ref([
+    'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg'
+])
 let loading = ref(true)
 let formInline = ref("");
+let currentPage = ref(1)
+const options = reactive([
+
+])
 onMounted(async () => {
     try {
-        const res = await getComInfo<string>(localStorage.getItem("id"))  //记得改
-        console.log(res);
+        const res = await getComInfo<string>(localStorage.getItem("id"), 1)  //记得改
         if (res.code === 5002) {
             items.length = 0
             loading.value = false
             return
         }
-        loading.value = false
+
+
         res.data.forEach((element: any, index: any) => {
-            // items
             if (index >= items.length) {
                 items.push({ name: '', price: 0, status: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
             }
+            getBreedName<string>(element.breedID).then((res) => {
+                if (res.code === 5001) {
+                    items[index].breedname = res.data
+                    loading.value = false
+                }
+            })
             items[index].name = element.commodityName
             items[index].price = element.price
-            items[index].breedname = element.breedName
+
             items[index].description = element.gender
             items[index].commodityID = element.commodityID
         });
     }
     catch (error) {
+        console.error(error);
+    }
+    try {
+        const res = await searchBreed<string>()
+        // console.log(res.data);//记得改
+        res.data.forEach((value: any, index: any) => {
+            options.push({ value: value.breedName, label: value.breedName })
+        })
+    } catch (error) {
         console.error(error);
     }
 });
@@ -228,8 +276,12 @@ const deleteItem = (item: Item) => {
             ElMessage.error('删除失败')
         });
 };
-const showImage = () => {
-    console.log(123);
+const showImage = (row: any) => {
+    centerDialogVisible.value = true
+    getImg<string>(row.commodityID).then((res: any) => {
+        url.value = res.data
+        srcList.value[0] = res.data
+    })
 
 };
 const Search = () => {
@@ -264,6 +316,37 @@ const Search = () => {
                 }
             }
         })
+    }
+}
+const handleCurrentChange = async (page: any) => {
+    try {
+        const res = await getComInfo<string>(localStorage.getItem("id"), page)  //记得改
+        if (res.code === 5002) {
+            items.length = 0
+            loading.value = false
+            currentPage.value = page
+            return
+        }
+
+        res.data.forEach((element: any, index: any) => {
+            if (index >= items.length) {
+                items.push({ name: '', price: 0, status: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
+            }
+            getBreedName<string>(element.breedID).then((res) => {
+                if (res.code === 5001) {
+                    items[index].breedname = res.data
+                    loading.value = false
+                }
+            })
+            items[index].name = element.commodityName
+            items[index].price = element.price
+            items[index].breedname = element.breedName
+            items[index].description = element.gender
+            items[index].commodityID = element.commodityID
+        });
+    }
+    catch (error) {
+        console.error(error);
     }
 }
 </script>

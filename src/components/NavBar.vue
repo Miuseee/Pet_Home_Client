@@ -7,7 +7,7 @@
                         <strong>Welcome!</strong> Miuseee
                     </span>
                 </div>
-                <div class="navbarRight">
+                <div class="navbarRight" @click="logout">
                     退出登录
                 </div>
             </div>
@@ -16,7 +16,13 @@
 </template>
   
 <script lang="ts" setup>
-
+import { logOut } from '@/axios/api'
+import router from '@/router';
+const logout = () => {
+    localStorage.clear()
+    logOut<string>()
+    router.push('/users/login')
+}
 </script>
 <style  lang="scss" scoped >
 div {
@@ -24,6 +30,7 @@ div {
 }
 
 .navbar {
+    // overflow: hidden;
     position: fixed;
     // height: 100%;
     width: 100%;
