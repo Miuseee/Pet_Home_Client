@@ -14,7 +14,7 @@
             <el-table-column prop="description" label="商品描述"></el-table-column>
             <el-table-column label="操作">
                 <template #default="{ row }">
-                    <el-button type="text" size="mini" @click="editItem(row)">编辑</el-button>
+                    <el-button type="text" size="mini" @click="">编辑</el-button>
                     <el-button type="text" size="mini" @click="deleteItem(row)">删除</el-button>
                     <el-button v-if="isUpload === 1 ? true : false" @click="uploadImage(row)">上传图片</el-button>
                     <el-button v-if="isUpload === 0 ? true : false" @click="showImage(row)">
@@ -43,7 +43,7 @@
             <span>
                 <div class="uploadimg">
                     <el-upload class="upload-demo" drag :on-success="successUpload"
-                        action="http://192.168.20.174:8080/upload" method="post" name="image" multiple>
+                        action="http://192.168.9.174:8080/upload" method="post" name="image" multiple>
                         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                         <div class="el-upload__text">
                             拖曳 <em>或点击上传</em>
@@ -107,7 +107,14 @@ let srcList = ref([
 ])
 onMounted(async () => {
     try {
-        const res = await getWaitComInfo<string>(localStorage.getItem("id"))
+        const res: any = await getWaitComInfo<string>({
+            params: {
+                page: 1,
+                pageSize: 5,
+                merchantID: localStorage.getItem("id")
+            }
+
+        })
         if (res.code === 5002) {
             loading.value = false
             items.length = 0
@@ -116,13 +123,15 @@ onMounted(async () => {
         loading.value = false
         res.data.forEach((element: any, index: any) => {
             if (index >= items.length) {
-                items.push({ name: '', price: 0, breedname: '', description: '', commodityID: 0 });
+                items.push({ name: '', price: 0, breedname: '', description: '', commodityID: 0, merchantID: 0 });
             }
-            items[index].name = element.commodityName
-            items[index].commodityID = element.commodityID
-            items[index].price = element.price
-            items[index].breedname = element.breedName
-            items[index].description = element.gender
+            console.log(res);
+
+            items[index].name = element.CommodityName
+            items[index].commodityID = element.CommodityID
+            items[index].price = element.Price
+            items[index].breedname = element.BreedName
+            items[index].description = element.Gender
         });
     }
     catch (error) {
@@ -153,7 +162,7 @@ const editFormData = reactive({
 
 const editDialogVisible = ref(false);
 
-let items = reactive([{ name: '', price: 0, breedname: '', description: '', commodityID: 0 }]);
+let items = reactive([{ name: '', price: 0, breedname: '', description: '', commodityID: 0, merchantID: 0 }]);
 
 
 const handleClose = (done: () => void) => {
@@ -217,12 +226,13 @@ const uploadImage = (row: any) => {
         dialogVisible.value = true
     }
     watch(ready, (newValue, oldValue) => {
-        console.log(newValue);
         if (imageUrlCode.value === 101) {
             addImage<string>({
                 commodityID: row.commodityID,
                 imageURL: imageUrl.value
             }).then((res: any) => {
+                console.log(res);
+
                 if (res.code === 101) {
                     isUpload.value = 0
                     ElMessage.success('上传成功');
@@ -233,14 +243,7 @@ const uploadImage = (row: any) => {
                     ElMessage.error('上传失败')
             })
         }
-
-
     })
-
-
-
-
-
 }
 const Search = () => {
     if (failedSearch == null) {

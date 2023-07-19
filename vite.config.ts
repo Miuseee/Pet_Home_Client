@@ -10,4 +10,15 @@ export default defineConfig({
     }
   },
   base: 'http://192.168.20.174/',
+  build: {
+    rollupOptions: {
+      onwarn: (warning, rollupWarn) => {
+        if (warning.code === 'THIS_IS_A_WARNING_CODE') {
+          // 忽略特定类型的警告
+          return;
+        }
+        rollupWarn(warning); // 其他类型的警告继续处理
+      }
+    }
+  }
 })

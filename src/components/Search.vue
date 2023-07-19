@@ -10,17 +10,10 @@
 </template>
   
 <script lang="ts" setup>
-import { onMounted, ref, provide, reactive, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { searchCommodity } from '@/axios/api'
-import { ElMessage } from 'element-plus'//消息提示框
-type Props = {
-    data: string
-}
-const props = defineProps<Props>()
 const breedName = ref('')
 const Array = ref([])
-let judge = ref(false)
-breedName.value = props.data
 onMounted(async () => {
     // const res = await searchCommodity<string>(breedName.value)  //记得改
     // console.log(res.data[0].merchantID);
@@ -42,7 +35,7 @@ onMounted(async () => {
 const search = async () => {
     try {
         const res = await searchCommodity<string>(breedName.value)  //记得改
-        console.log(res)
+        console.log("我来偷你了", res)
     }
     catch (error) {
         console.error(error);
@@ -51,7 +44,7 @@ const search = async () => {
 }
 </script>
 <style  lang="scss" scoped >
-div.search {
+.search {
     position: fixed;
     top: 8%;
     left: 39%;
@@ -83,14 +76,14 @@ button {
 }
 
 .bar4 {
-    background: rgba(25, 7, 54, 0.6);
-    color: rgb(247, 227, 198);
+    background: rgba(211, 220, 230);
+    color: rgb(127, 140, 159);
     border-radius: 30px;
 }
 
 .bar4 .form {
-    background: rgba(254, 254, 254, 0.9); // border: 2px solid black;
-    border: 1px solid #40354a;
+    background: rgba(211, 220, 230); // border: 2px solid black;
+    border: 1px solid #3b373e;
     // box-shadow: inset1px 1px 1px red;
     border-radius: 30px;
 }
@@ -105,7 +98,7 @@ button {
     position: absolute;
     top: 0px;
     right: 0;
-    background: rgb(124, 75, 180);
+    background: rgb(127, 140, 159);
     color: white;
     // border: 2px solid black;
     // border-bottom: 2px solid #F9F0DA;

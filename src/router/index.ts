@@ -28,6 +28,16 @@ const routes: Array<RouteRecordRaw> = [
                 path: '/users/merchanthome/waitcominfo',
                 name: 'waitcominfo',
                 component: () => import("@/views/MerchantHome/WaitCommodity/WaitCommodity.vue")
+            },
+            {
+                path: '/users/merchanthome/ordermerchant',
+                name: 'ordermerchant',
+                component: () => import("@/views/MerchantHome/OrderMerchant/OrderMerchant.vue")
+            },
+            {
+                path: '/users/merchanthome/echart',
+                name: 'echart',
+                component: () => import("@/views/MerchantHome/Echart/Echart.vue")
             }
         ]
     },
@@ -60,10 +70,6 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: "/users/calculate",
         component: () => import("@/views/HomeView/CalculateView/CalculateView.vue"),
-    },
-    {
-        path: "/users/test",
-        component: () => import("@/components/test.vue"),
     }
 ];
 // 1.返回一个 router 实列，为函数，里面有配置项（对象） history

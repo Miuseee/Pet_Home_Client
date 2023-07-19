@@ -162,19 +162,14 @@ const resetForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return
     formEl.resetFields()
 }
-interface RegisterResponse {  //注册接口来返回数据
-    code: any;
-    data: Object;
-    merchantID: any
-    // 其他字段...
-}
+
 const submitForm = async () => {  //提交表单
     if (radio2.value === '2') {  //用户登陆注册
         console.log('进入用户登录模块');
         if (ruleForm.pass !== '') {
             try {
                 loading.value = true
-                const res: RegisterResponse = await userLogin<RegisterResponse>({
+                const res: any = await userLogin<string>({
                     phoneNumber: ruleForm.usertel,
                     password: ruleForm.pass,
                 })
@@ -197,7 +192,7 @@ const submitForm = async () => {  //提交表单
         else {
             try {
                 loading.value = true
-                const res: RegisterResponse = await userRegister<RegisterResponse>({
+                const res: any = await userRegister<string>({
                     phoneNumber: ruleForm.usertel,
                     password: ruleForm.registerpass,
                     username: ruleForm.username,
@@ -233,7 +228,7 @@ const submitForm = async () => {  //提交表单
             alert(ruleForm.radio2);
 
             try {
-                const res: RegisterResponse = await register<RegisterResponse>({
+                const res: any = await register<string>({
                     merchantName: ruleForm.username,
                     password: ruleForm.registerpass,
                     phoneNumber: ruleForm.usertel,
@@ -244,6 +239,7 @@ const submitForm = async () => {  //提交表单
                         message: '注册成功，马上登录！',
                         type: 'success',
                     })
+
                     loading.value = false
                     ruleForm.pass = ruleForm.registerpass
                     changeLogToRegister.value = !changeLogToRegister.value
@@ -268,13 +264,14 @@ const submitForm = async () => {  //提交表单
         else { //商家登录逻辑
             try {
                 loading.value = true
-                const res: RegisterResponse = await login<RegisterResponse>({
+                const res: any = await login<string>({
                     phoneNumber: ruleForm.usertel,
                     password: ruleForm.pass,
                 })
                 console.log("我朝李超！！！", res);
 
                 if (res.code === 101) {
+                    localStorage.setItem("money", res.data.count)
                     localStorage.setItem("id", res.data.merchantID)
                     loading.value = false
                     router.push('/users/merchanthome')

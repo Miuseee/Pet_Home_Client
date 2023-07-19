@@ -1,100 +1,237 @@
 <template>
-    <div class="carousel">
-        <transition name="fade" mode="out-in">
-            <img :src="currentSlide.image" :key="currentSlide.id" class="slide" alt="Slide Image" />
-        </transition>
-        <div class="pagination">
-            <span :class="{ dot: true, active: index === currentIndex }" v-for="(slide, index) in slides" :key="slide.id"
-                @click="goToSlide(index)"></span>
-        </div>
-    </div>
+    <el-carousel :interval="5000" type="card" height="350px">
+        <el-carousel-item v-for="(item, index) in data" :class="'class-' + index" :key="index"
+            @click="gotoView(item.CommodityID)">
+            <i className="triangle"></i>
+            <div className="topNo">
+                <span className="num">Top{{ index + 1 }}</span>
+            </div>
+            <div class="">
+                <h2>{{ item.CommodityName }}</h2>
+            </div>
+            <img :src="item.ImageURL" alt="">
+            <el-rate v-model="item.Rating" disabled show-score text-color="#ff9900" score-template="{value} points" />
+            <!-- <el-rate v-model="item.Rating" disabled show-score text-color="#ff9900" score-template="{value} points" /> -->
+        </el-carousel-item>
+    </el-carousel>
 </template>
-  
-<script>
-import { defineComponent, ref, watch } from 'vue';
-
-export default defineComponent({
-    data() {
-        return {
-            slides: [
-                { id: 1, image: 'https://th.bing.com/th/id/R.774b9223b5a3526c61691fcc5ecb3145?rik=i7Rvf49CF7Zc4w&riu=http%3a%2f%2fseopic.699pic.com%2fphoto%2f50041%2f7432.jpg_wh1200.jpg&ehk=969PSODhgWgR359dXTJbOB4maXRx3XZ536jGL%2fUyUy0%3d&risl=&pid=ImgRaw&r=0' },
-                { id: 2, image: 'https://th.bing.com/th/id/OIP.a_2XJOKnYxsnGU-tYazCWwHaF7?pid=ImgDet&rs=1' },
-                { id: 3, image: 'https://th.bing.com/th/id/OIP.a_2XJOKnYxsnGU-tYazCWwHaF7?pid=ImgDet&rs=1' },
-            ],
-            currentIndex: ref(0),
-        };
-    },
-    computed: {
-        currentSlide() {
-            return this.slides[this.currentIndex];
-        },
-    },
-
-    mounted() {
-        this.startSlideShow();
-    },
-    beforeUnmount() {
-        this.stopSlideShow();
-    },
-    watch: {
-        currentIndex() {
-            this.stopSlideShow();
-            this.startSlideShow();
-        },
-    },
-    methods: {
-        startSlideShow() {
-            this.slideShowInterval = setInterval(() => {
-                this.currentIndex = (this.currentIndex + 1) % this.slides.length;
-            }, 3000);
-        },
-        stopSlideShow() {
-            clearInterval(this.slideShowInterval);
-        },
-        goToSlide(index) {
-            this.currentIndex = index;
-        },
-    },
-});
+<script setup lang="ts">
+import { orderRate, getImg } from "@/axios/api.ts"
+import { onMounted, ref } from "vue";
+import { Ref } from '@vue/reactivity';
+interface Product {
+    CommodityID: number;
+    CommodityName: string;
+    ImageURL: string;
+    Rating: any;
+    Name: string
+}
+const data: Ref<Product[]> = ref([
+    { CommodityID: 1, Name: 'Product 1', ImageURL: '', Rating: 1 },
+    { CommodityID: 2, Name: 'Product 2', ImageURL: '', Rating: 1 },
+] as Product[]);
+const gotoView = (cid: any) => {
+    // router.push("/users/goodsview")
+    window.open('/users/goodsview', '_blank');
+    localStorage.setItem("commodityID", cid)
+}
+onMounted(async () => {
+    try {
+        const response = await orderRate<string>({
+            params: {
+                page: 1
+            }
+        });
+        const res = response as unknown as { data: any[] }
+        data.value = res.data
+        data.value.sort((a, b) => b.Rating - a.Rating);
+        data.value = data.value.slice(0, 6);
+        console.log(data.value)
+    } catch (error) {
+        console.error(error);
+    }
+    data.value.forEach((value: any, index: any) => {
+        value.Rating = value.Rating.toFixed(1);
+        if (value.Rating > 5)
+            value.Rating = 5
+    })
+})
 </script>
-  
 <style scoped>
-.carousel {
-    position: relative;
-    width: 100%;
-    height: 400px;
+.el-carousel__item:nth-child(2n) {
+    background-color: rgb(198, 198, 198);
+    color: rgb(233, 233, 233);
+    border-radius: 10px;
 }
 
-.slide {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.el-carousel__item:nth-child(2n + 1) {
+    background-color: #416087;
+    color: #ffffff;
+    border-radius: 10px;
 }
 
-.pagination {
+.el-rate {
+    margin: 220px 80px;
+    color: #fff;
+}
+
+h2 {
+    text-align: center;
+}
+
+img {
     position: absolute;
-    bottom: 10px;
+    width: 200px;
+    height: 200px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
 }
 
-.dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #bbb;
-    margin: 0 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.class-0 {
+    /* color: #c0bebe !important; */
+
+    .topNo {
+        background: linear-gradient(180deg,
+                rgba(245, 210, 127, 1) 0%,
+                rgba(255, 225, 161, 1) 6.527614569200764%,
+                rgba(209, 158, 84, 1) 100%);
+        height: 38px;
+        right: 10px;
+        position: absolute;
+        top: 0;
+        width: 38px;
+        z-index: 11;
+    }
+
+    .triangle {
+        height: 32px;
+        overflow: hidden;
+        width: 32px;
+
+        /* text-align: center; */
+        &:before {
+            background-color: #d19e54;
+            border-radius: 4px;
+            content: '';
+            height: 29px;
+            right: 24px;
+            position: absolute;
+            top: 35px;
+            transform: scaleY(0.4) translate(30%, -30px) rotate(45deg);
+            width: 29px;
+        }
+    }
 }
 
-.dot.active {
-    background-color: #333;
+.class-1 {
+    color: rgb(205, 205, 205);
+
+    .topNo {
+        background: linear-gradient(#C0C0C0, 80%, #a4a4a4);
+        height: 38px;
+        right: 10px;
+        position: absolute;
+        top: 0;
+        width: 38px;
+        z-index: 11;
+    }
+
+    .triangle {
+        height: 32px;
+        overflow: hidden;
+        width: 32px;
+
+        /* text-align: center; */
+        &:before {
+            background: #a4a4a4;
+            border-radius: 4px;
+            content: '';
+            height: 29px;
+            right: 24px;
+            position: absolute;
+            top: 35px;
+            transform: scaleY(0.4) translate(30%, -30px) rotate(45deg);
+            width: 29px;
+        }
+    }
+}
+
+.class-2 {
+    color: #fff;
+
+    .topNo {
+        background: linear-gradient(#ed9b48, 70%, #c37328);
+        height: 38px;
+        right: 10px;
+        position: absolute;
+        top: 0;
+        width: 38px;
+        z-index: 11;
+    }
+
+    .triangle {
+        height: 32px;
+        overflow: hidden;
+        width: 32px;
+
+        /* text-align: center; */
+        &:before {
+            background: #c37328;
+            border-radius: 4px;
+            content: '';
+            height: 29px;
+            right: 24px;
+            position: absolute;
+            top: 35px;
+            transform: scaleY(0.4) translate(30%, -30px) rotate(45deg);
+            width: 29px;
+        }
+    }
+}
+
+.class-3,
+.class-4,
+.class-5 {
+    color: gray !important;
+
+    .topNo {
+        background: #ffffff;
+        height: 38px;
+        right: 10px;
+        position: absolute;
+        top: 0;
+        width: 38px;
+        z-index: 11;
+    }
+
+    .triangle {
+        height: 32px;
+        overflow: hidden;
+        width: 32px;
+
+        /* text-align: center; */
+        &:before {
+            background: #ffffff;
+            border-radius: 4px;
+            content: '';
+            height: 29px;
+            right: 24px;
+            position: absolute;
+            top: 35px;
+            transform: scaleY(0.4) translate(30%, -30px) rotate(45deg);
+            width: 29px;
+        }
+    }
+}
+
+.num {
+    position: absolute;
+    /* margin: auto; */
+    font-size: 14px;
+    top: 10px;
+    left: 4px;
 }
 </style>
   

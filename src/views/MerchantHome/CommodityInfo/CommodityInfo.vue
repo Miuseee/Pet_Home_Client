@@ -36,32 +36,32 @@
                 <template #default="{ row }">
                     <el-button type="text" size="mini" @click="editItem(row)">编辑</el-button>
                     <el-button type="text" size="mini" @click="deleteItem(row)">删除</el-button>
-                    <el-button @click="showImage(row)">
-                        查看图片
-                    </el-button>
+                    <el-popover class="popover" placement="left-end" trigger="hover" @before-enter="showImage(row)"
+                        popper-style="width:200px;height:200px;background-color: lightgray;">
+                        <template #reference>
+                            <el-button style="">
+                                图片
+                            </el-button>
+                        </template>
+                        <div class="img">
+                            <span>
+                                <div class="demo-image__preview">
+                                    <el-image style="width: 150px; height: 150px;margin-right: 15px;" :src="url"
+                                        :zoom-rate="1.2" :preview-src-list="srcList" :initial-index="4" fit="cover" />
+                                </div>
+                            </span>
+
+                        </div>
+                    </el-popover>
+
                 </template>
             </el-table-column>
+
         </el-table>
         <div class="example-pagination-block">
-            <el-pagination layout="prev, pager, next" :total="50" :current-page="page"
+            <el-pagination layout="prev, pager, next" :total="totalPage" :current-page="page"
                 @current-change="handleCurrentChange" />
         </div>
-        <el-dialog v-model="centerDialogVisible" title="查看图片" width="30%" center>
-            <span>
-                <div class="demo-image__preview">
-                    <el-image style="width: 100px; height: 100px;margin: 0 135px;" :src="url" :zoom-rate="1.2"
-                        :preview-src-list="srcList" :initial-index="4" fit="cover" />
-                </div>
-            </span>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="centerDialogVisible = false">Cancel</el-button>
-                    <el-button type="primary" @click="centerDialogVisible = false">
-                        Confirm
-                    </el-button>
-                </span>
-            </template>
-        </el-dialog>
         <el-dialog v-model="editDialogVisible" title="编辑商品">
             <el-form :model="editFormData" inline>
                 <el-form-item label="商品名称">
@@ -97,43 +97,43 @@ let srcList = ref([
 ])
 let loading = ref(true)
 let formInline = ref("");
-let currentPage = ref(1)
+let totalPage = ref(1)
+let page = ref(1)
 const options = reactive([
-
 ])
 onMounted(async () => {
     try {
-        const res = await getComInfo<string>(localStorage.getItem("id"), 1)  //记得改
-        if (res.code === 5002) {
+        const res: any = await getComInfo<string>(
+            {
+                params: {
+                    page: 1,
+                    pageSize: 8,
+                    merchantID: localStorage.getItem("id")
+                }
+            })  //记得改
+        if (res.code === 2002) {
             items.length = 0
             loading.value = false
             return
         }
-
-
+        loading.value = false
         res.data.forEach((element: any, index: any) => {
             if (index >= items.length) {
                 items.push({ name: '', price: 0, status: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
             }
-            getBreedName<string>(element.breedID).then((res) => {
-                if (res.code === 5001) {
-                    items[index].breedname = res.data
-                    loading.value = false
-                }
-            })
-            items[index].name = element.commodityName
-            items[index].price = element.price
-
-            items[index].description = element.gender
-            items[index].commodityID = element.commodityID
+            items[index].name = element.CommodityName
+            items[index].price = element.Price
+            items[index].breedname = element.BreedName
+            items[index].description = element.Gender
+            items[index].commodityID = element.CommodityID
         });
+        totalPage.value = res.data[0].count
     }
     catch (error) {
         console.error(error);
     }
     try {
-        const res = await searchBreed<string>()
-        // console.log(res.data);//记得改
+        const res: any = await searchBreed<string>()
         res.data.forEach((value: any, index: any) => {
             options.push({ value: value.breedName, label: value.breedName })
         })
@@ -186,6 +186,7 @@ const createItem = () => {
             breedName: formData.breedname
         }).then((res: any) => {
             if (res.code === 2001) {
+                console.log(res);
                 ElMessage({
                     message: '添加成功，请上传图片',
                     type: 'success',
@@ -216,15 +217,12 @@ const editItem = (item: Item) => {
 };
 
 const saveItem = (item: Item) => {
-    console.log(editFormData.commodityID);
-
     if (!editFormData.name || !editFormData.price || !editFormData.breedname || !editFormData.description) {
         ElMessage.error('请输入完整的商品信息');
         return;
     }
     const index = items.findIndex(item => item.name === editFormData.name);
     if (index !== -1) {
-
         updateCommodity<string>({
             commodityName: editFormData.name,
             merchantID: localStorage.getItem('id'),
@@ -285,8 +283,10 @@ const showImage = (row: any) => {
 
 };
 const Search = () => {
+    loading.value = true
     if (formInline == null) {
         ElMessage.error('请输入正确的商品名字');
+        loading.value = false
         return;
     }
     else {
@@ -296,8 +296,9 @@ const Search = () => {
             commodityName: formInline.value
         }).then((res: any) => {
             if (res.code === 5001) {
+                loading.value = false
                 ElMessage({
-                    message: '添加成功，请上传图片',
+                    message: '查询成功',
                     type: 'success',
                 })
                 res.data.forEach((element: any, index: any) => {
@@ -315,40 +316,48 @@ const Search = () => {
                     items.pop()
                 }
             }
+            loading.value = false
         })
     }
 }
-const handleCurrentChange = async (page: any) => {
+const handleCurrentChange = async (currentpage: any) => {
+    page.value = currentpage
+    loading.value = true
     try {
-        const res = await getComInfo<string>(localStorage.getItem("id"), page)  //记得改
-        if (res.code === 5002) {
-            items.length = 0
+        const res: any = await getComInfo<string>(
+            {
+                params: {
+                    page: currentpage,
+                    pageSize: 8,
+                    merchantID: localStorage.getItem("id")
+                }
+            })  //记得改
+        if (res.code === 2002) {
             loading.value = false
-            currentPage.value = page
+            items.length = 0
             return
         }
-
+        for (let i = 0; i < 8; i++) {
+            items.pop()
+        }
+        loading.value = false
         res.data.forEach((element: any, index: any) => {
             if (index >= items.length) {
                 items.push({ name: '', price: 0, status: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
             }
-            getBreedName<string>(element.breedID).then((res) => {
-                if (res.code === 5001) {
-                    items[index].breedname = res.data
-                    loading.value = false
-                }
-            })
-            items[index].name = element.commodityName
-            items[index].price = element.price
-            items[index].breedname = element.breedName
-            items[index].description = element.gender
-            items[index].commodityID = element.commodityID
+            items[index].name = element.CommodityName
+            items[index].price = element.Price
+            items[index].breedname = element.BreedName
+            items[index].description = element.Gender
+            items[index].commodityID = element.CommodityID
         });
+        loading.value = false
     }
     catch (error) {
         console.error(error);
     }
 }
+
 </script>
   
 <style>
@@ -359,6 +368,15 @@ const handleCurrentChange = async (page: any) => {
 
 .uploadimg {
     z-index: 100;
+}
+
+.img {
+    position: absolute;
+
+    top: 12%;
+    right: 5%;
+
+    z-index: 1000;
 }
 </style>
   

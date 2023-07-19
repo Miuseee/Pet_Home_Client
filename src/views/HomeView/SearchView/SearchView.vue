@@ -15,7 +15,9 @@
             </div>
         </div>
     </div>
-    <el-skeleton v-if="show" :rows="16" animated style="position: absolute;width: 1173px;margin: 160px 130px;" />
+    <el-skeleton v-if="show" :rows="16" animated style="position: absolute;width: 1173px;top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);" />
 </template>
   
 <script lang="ts" setup>
@@ -33,16 +35,38 @@ let commodityName = ref('')
 
 onMounted(async () => {
     try {
-        const res = await searchCommodity<string>(breedName.value);
+        const res: any = await searchCommodity<string>(breedName.value);
+
         if (res.code === 5001) {
             ElMessage({
                 message: '查询成功',
                 type: 'success',
             });
-            dataArray.push(...res.data);
+            const modifiedData = res.data.map(obj => {
+                const modifiedObj = {};
+                let capitalizedKey: any
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+                        if (key === "merchantID") {
+                            capitalizedKey = key
+                            key.charAt(0).toLowerCase() + key.slice(1);
+                        }
+                        else if (key === "Avg") {
+                            capitalizedKey = key
+                            key.charAt(0).toLowerCase() + key.slice(1);
+                        }
+                        modifiedObj[capitalizedKey] = obj[key];
+                    }
+                }
+                return modifiedObj;
+            });
+            dataArray.push(...modifiedData);
             data.value = dataArray;
-            show.value = false
+            show.value = false;
+
         }
+
     } catch (error) {
         console.error(error);
     }
@@ -52,22 +76,26 @@ const search = async () => {
     data.value = []
     dataArray = []
     try {
-        const res = await searchByComNameUser<string>({
+        const response = await searchByComNameUser<string>({
             params: {
                 page: '1',
                 pageSize: '10',
                 name: commodityName.value
             }
         });
-        console.log(res.data.records)
-        if (res.code === 101) {
+
+        const res = response as unknown as { data: any, code: any }
+        console.log(res)
+        if (res.code === 5001) {
             ElMessage({
                 message: '查询成功',
                 type: 'success',
             }
             );
-            dataArray.push(...res.data.records);
-            data.value = dataArray;
+            // dataArray.push(...res.data);
+            data.value = res.data;
+            console.log(data.value);
+
         }
     } catch (error) {
         console.error(error);
@@ -78,8 +106,9 @@ const search = async () => {
 <style scoped lang="scss">
 .main {
     position: absolute;
-    top: 160px;
-    left: 130px;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 1173px;
     background-color: rgb(215, 215, 215);
 }

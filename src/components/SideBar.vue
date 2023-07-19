@@ -16,7 +16,8 @@ import { searchBreed } from '@/axios/api'
 import router from '@/router';
 onMounted(async () => {
     try {
-        const res = await searchBreed<string>()  //记得改
+        const response = await searchBreed<string>()  //记得改
+        const res = response as unknown as { data: any[] }
         // console.log("初始", tableData)
         res.data.forEach((element: any, index: any) => {
             tableData.value[index] = element
@@ -70,11 +71,11 @@ ul {
     height: 100px;
     list-style: none;
     padding: 0;
-    margin: 0 auto;
+    // margin-right: 30px;
 
     li {
         padding: 10px;
-        margin-left: 20px;
+        margin-left: 100px;
         width: 120px;
         text-align: left;
         border: 1px solid white;
@@ -89,14 +90,14 @@ ul {
 }
 
 .odd-row {
-    background: rgba(20, 9, 116, 0.6);
-    color: rgb(247, 227, 198);
+    background: rgba(29, 97, 170, 0.6);
+    color: rgb(179, 187, 207);
 }
 
 .des {
     position: absolute;
     color: black;
-    left: -30px;
+    left: 40px;
     margin-top: -22px;
 }
 </style>

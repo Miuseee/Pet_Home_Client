@@ -10,7 +10,7 @@
 
         <div class="step1" v-show="step === '1' ? true : false">
             <h2>重置密码</h2>
-            <el-form :model="formData" label-width="0px" @submit.native.prevent="submitForm">
+            <el-form :model="formData" label-width="0px">
                 <el-form-item label=" " prop="phone">
                     <el-input v-model="formData.phone" placeholder="请输入手机号"></el-input>
                 </el-form-item>

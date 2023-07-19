@@ -32,16 +32,17 @@ div {
 .navbar {
     // overflow: hidden;
     position: fixed;
-    // height: 100%;
+    height: 30px;
     width: 100%;
     // overflow-y: scroll;
+    z-index: 1;
 }
 
 ::v-deep .el-header {
     position: relative;
     width: 100%;
-    // height: 4.2%;
-    background-color: #e93819;
+    height: 60px;
+    background-color: rgb(104, 131, 104);
     color: #F9F0DA;
     min-width: 1000px;
 

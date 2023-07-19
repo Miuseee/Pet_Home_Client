@@ -31,6 +31,24 @@
                                 </el-icon>
                                 <span>待审核列表</span>
                             </el-menu-item>
+                            <el-menu-item index="4" @click="gotoOrder">
+                                <el-icon>
+                                    <Promotion />
+                                </el-icon>
+                                <span>订单列表</span>
+                            </el-menu-item>
+                            <el-sub-menu index="5">
+                                <template #title>
+                                    <el-icon>
+                                        <location />
+                                    </el-icon>
+                                    <span>数据统计</span>
+                                </template>
+                                <el-menu-item-group title="商品评分">
+                                    <el-menu-item index="1-1" @click="gotoChart">已上架商品评分</el-menu-item>
+                                    <el-menu-item index="1-2">item two</el-menu-item>
+                                </el-menu-item-group>
+                            </el-sub-menu>
                         </el-menu>
                     </el-col>
 
@@ -62,6 +80,12 @@ const gotoWaitCom = () => {
 }
 const gotoUserInfo = () => {
     router.push("/users/merchanthome/personinfo")
+}
+const gotoOrder = () => {
+    router.push("/users/merchanthome/ordermerchant")
+}
+const gotoChart = () => {
+    router.push("/users/merchanthome/echart")
 }
 </script>
 <style lang="scss" scoped>
