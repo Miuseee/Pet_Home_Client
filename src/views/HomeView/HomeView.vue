@@ -226,4 +226,8 @@ const search = () => {
         opacity: 1;
     }
 }
+
+.search {
+    z-index: 100;
+}
 </style>

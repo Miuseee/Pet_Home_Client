@@ -58,13 +58,11 @@
                     已完成
                 </el-button>
             </div>
-
         </el-popover>
         <div class="example-pagination-block">
-            <el-pagination layout="prev, pager, next" :total="totalPage" :default-page-size="6" :current-page="currentPage"
-                @current-change="handleCurrentChange" />
+            <el-pagination layout="prev, pager, next" v-if="totalPage" :total="totalPage" :default-page-size="7"
+                :current-page="currentPage" @current-change="handleCurrentChange" />
         </div>
-
     </div>
 </template>
 <script setup lang="ts">
@@ -114,27 +112,29 @@ onMounted(() => {
     merchantOrders<string>({
         params: {
             page: 1,
-            pageSize: 5,
+            pageSize: 7,
             id: localStorage.getItem('id')
         }
     }).then((res: any) => {
         loading.value = false
         totalPage.value = res.data[0].count
+
         userOrdersData.value = res.data;
     });
 });
-const handleCurrentChange = async (page: any) => {
+const handleCurrentChange = async (currentpage: any) => {
     if (select.value === 0) {
         loading.value = true
-        currentPage.value = page
+        currentPage.value = currentpage
         try {
             const res: any = await merchantOrders<string>({
                 params: {
-                    page: page,
-                    pageSize: 5,
+                    page: currentpage,
+                    pageSize: 7,
                     id: localStorage.getItem('id')
                 }
             })
+            // totalPage.value = res.data[0].count
             userOrdersData.value = res.data;
             loading.value = false
         }
@@ -146,8 +146,8 @@ const handleCurrentChange = async (page: any) => {
         loading.value = true
         merchantOrdersBy<string>({
             params: {
-                page: page,
-                pageSize: 5,
+                page: currentpage,
+                pageSize: 7,
                 orderStatus: defaultstatus.value,
                 id: localStorage.getItem('id')
             }
@@ -157,14 +157,13 @@ const handleCurrentChange = async (page: any) => {
                 ElMessage.error("无该状态信息")
                 return
             }
-            console.log(res.data);
-            totalPage.value = res.data[0].count
+            currentPage.value = currentpage
+            // totalPage.value = res.data[0].count
             userOrdersData.value = res.data;
         });
     }
 
 }
-
 const yes = (row: any) => {
     updateOrder<string>({
         orderID: row.OrderID,
@@ -190,7 +189,7 @@ const searchBy = (status: string) => {
     merchantOrdersBy<string>({
         params: {
             page: 1,
-            pageSize: 5,
+            pageSize: 7,
             orderStatus: defaultstatus.value,
             id: localStorage.getItem('id')
         }
@@ -202,6 +201,8 @@ const searchBy = (status: string) => {
             return
         }
         totalPage.value = res.data[0].count
+        console.log(totalPage.value);
+
         userOrdersData.value = res.data;
     });
 }
@@ -252,8 +253,6 @@ img {
 .buttoncombo {
     display: flex;
     flex-direction: column;
-    // position: absolute;
-    // top: 0;
 
     .el-button {
         width: 100px;

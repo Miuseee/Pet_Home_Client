@@ -44,9 +44,10 @@ onMounted(async () => {
         });
         const res = response as unknown as { data: any[] }
         data.value = res.data
+        console.log("nmdb", data.value)
         data.value.sort((a, b) => b.Rating - a.Rating);
         data.value = data.value.slice(0, 6);
-        console.log(data.value)
+
     } catch (error) {
         console.error(error);
     }

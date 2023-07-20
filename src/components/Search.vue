@@ -35,7 +35,6 @@ onMounted(async () => {
 const search = async () => {
     try {
         const res = await searchCommodity<string>(breedName.value)  //记得改
-        console.log("我来偷你了", res)
     }
     catch (error) {
         console.error(error);

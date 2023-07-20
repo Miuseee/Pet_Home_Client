@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed, toRaw, onUnmounted } from 'vue';
+import { ref, onMounted, computed, toRaw, onUnmounted } from 'vue';
 import { ElTable, ElMessage } from 'element-plus'
 import { searchShoppingCart, searchAddress, addOrder, deleteCart } from "@/axios/api"
 import router from '@/router';
@@ -141,10 +141,7 @@ const modifiedItems = ref<User[]>([]);  // 已选中和修改的行
 const handleSelectionChangeComputed = (val: User[]) => { //将选中的商品加入订单数组
     selectedItems.value = val;
     modifiedItems.value = val;
-
-
     rawModifiedItems.value = toRaw(modifiedItems.value);
-
 };
 const calculateTotalPrice = computed(() => {
     let totalPrice = 0;
@@ -176,7 +173,6 @@ const stepToTwo = () => {
     num.value = 2
 }
 const handleChange = (value: number) => {
-    console.log(value)
 
 }
 const continueShop = () => {
@@ -190,8 +186,6 @@ const stepToThree = () => {
     }
     num.value = 3
     rawModifiedItems.value.forEach((item: any) => {
-        console.log("我透你妈", item.CartID);
-
         item.address = value.value
     })
     transformedData = rawModifiedItems.value.map((item: any) => ({
@@ -209,27 +203,21 @@ const stepToThree = () => {
                 if (time.value > 0) {
                     time.value--;
                 } else {
-                    // isSendingCode.value = false;
                     clearInterval(timer);
                     time = null;
                 }
             }, 1000);
             transformedData.forEach((value, index) => {
-                console.log(value);
+
                 deleteCart<string>({
                     userID: localStorage.getItem("userID"),
-                    cartID: value.cartID,
+                    // cartID: value.cartID,
                     commodityID: value.commodityID
                 }).then((res: any) => {
-
-
-                    if (res.code === 101) {
+                    if (res.code === 101)
                         alert("wow")
-                    }
-                    else {
+                    else
                         alert("fuck")
-                    }
-                    // load.value = false
                 })
 
             })
@@ -248,7 +236,7 @@ const Delete = (cid: any, did: any, index: any) => {
     load.value = true
     deleteCart<string>({
         userID: localStorage.getItem("userID"),
-        cartID: cid,
+        // cartID: cid,
         commodityID: did
     }).then((res: any) => {
         if (res.code === 101) {

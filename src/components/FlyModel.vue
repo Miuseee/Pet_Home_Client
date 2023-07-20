@@ -44,19 +44,9 @@
 <script lang="ts" setup>
 import router from '@/router';
 import { searchShoppingCart } from '@/axios/api';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 let count = ref(0)
-
-const gotoUserInfo = () => {
-    router.push('/users/person')
-}
-const gotoOrder = () => {
-    router.push('/users/order')
-}
-const gotoShoppingCart = () => {
-    router.push('/users/shoppingcart')
-}
-setInterval(() => {
+const timer = setInterval(() => {
     searchShoppingCart<string>(localStorage.getItem('userID')).then((res: any) => {
         count.value = 0
         if (res.code === 5001) {
@@ -66,7 +56,23 @@ setInterval(() => {
             })
         }
     })
-}, 1000)
+}, 10000)
+onMounted(() => {
+    timer
+})
+onUnmounted(() => {
+    clearInterval(timer)
+})
+const gotoUserInfo = () => {
+    router.push('/users/person')
+}
+const gotoOrder = () => {
+    router.push('/users/order')
+}
+const gotoShoppingCart = () => {
+    router.push('/users/shoppingcart')
+}
+
 
 </script>
 

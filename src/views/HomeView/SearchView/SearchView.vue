@@ -32,11 +32,9 @@ let dataArray = reactive([]);
 const data = ref([]);
 let show = ref(true)
 let commodityName = ref('')
-
 onMounted(async () => {
     try {
         const res: any = await searchCommodity<string>(breedName.value);
-
         if (res.code === 5001) {
             ElMessage({
                 message: '查询成功',
@@ -49,12 +47,12 @@ onMounted(async () => {
                     if (obj.hasOwnProperty(key)) {
                         capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
                         if (key === "merchantID") {
-                            capitalizedKey = key
-                            key.charAt(0).toLowerCase() + key.slice(1);
+                            capitalizedKey = key.charAt(0).toLowerCase() + key.slice(1);
                         }
-                        else if (key === "Avg") {
-                            capitalizedKey = key
-                            key.charAt(0).toLowerCase() + key.slice(1);
+                        else if (key === "avg") {
+                            capitalizedKey = key.charAt(0).toLowerCase() + key.slice(1);
+                            console.log(capitalizedKey);
+                            modifiedObj[capitalizedKey] = obj[key];
                         }
                         modifiedObj[capitalizedKey] = obj[key];
                     }
@@ -64,9 +62,7 @@ onMounted(async () => {
             dataArray.push(...modifiedData);
             data.value = dataArray;
             show.value = false;
-
         }
-
     } catch (error) {
         console.error(error);
     }
@@ -83,19 +79,14 @@ const search = async () => {
                 name: commodityName.value
             }
         });
-
         const res = response as unknown as { data: any, code: any }
-        console.log(res)
         if (res.code === 5001) {
             ElMessage({
                 message: '查询成功',
                 type: 'success',
             }
             );
-            // dataArray.push(...res.data);
             data.value = res.data;
-            console.log(data.value);
-
         }
     } catch (error) {
         console.error(error);
@@ -106,7 +97,7 @@ const search = async () => {
 <style scoped lang="scss">
 .main {
     position: absolute;
-    top: 55%;
+    top: 53%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 1173px;
@@ -153,13 +144,13 @@ button {
 }
 
 .bar4 {
-    background: #F15B42;
+    background: transparent;
     border-radius: 30px;
 }
 
 .bar4 .form {
-    background: #F9F0DA;
-    border: 1px solid #BE290E;
+    background: #f7f7f7;
+    border: 1px solid #257311;
     border-radius: 30px;
 }
 
@@ -173,14 +164,14 @@ button {
     position: absolute;
     top: 0px;
     right: 0;
-    background-color: #BE290E;
+    background-color: #1a471e;
     color: #fafafa;
     // border-bottom: 2px solid #F9F0DA;
 }
 
 .bar4 button:hover {
     background-color: #fafafa;
-    color: #BE290E;
+    color: #03b00b;
 
 }
 </style>

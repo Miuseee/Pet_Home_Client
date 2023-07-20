@@ -50,7 +50,7 @@
                                         <el-row>
                                             <el-text
                                                 style="font-size:16px;color: rgb(75, 74, 70);margin-left: 10px;">Rate</el-text>
-                                            <el-rate v-model="rate" :texts="['一坨浓屎', '什么玩意', '一般般吧。。。', '牛逼', '真特妈的牛逼']"
+                                            <el-rate v-model="rate" :texts="['不忍直视', '真一般', '还凑合用', '很不错', '金色传说']"
                                                 show-text :colors="colors" size="large" />
                                         </el-row>
                                     </el-form-item>

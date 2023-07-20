@@ -15,8 +15,6 @@ export const userLogin = <T>(params?: any): Promise<T> => {
     return request.post("/users/login", params);
 };
 export const userRegister = <T>(params?: any): Promise<T> => {
-    params = JSON.stringify(params)
-    console.log(params)
     return request.post("/users/register", params);
 };
 export const getComInfo = <T>(params?: any): Promise<T> => {        //商品列表
@@ -78,17 +76,14 @@ export const addReview = <T>(params?: any): Promise<T> => {           //添加�
     return request.post("/reviews/addreviews", params);
 };
 export const searchByComName = <T>(params?: any): Promise<T> => {      //查找商品通过名字
-    params = JSON.stringify(params)
-    return request.post("/commodity/searchByName/", params);
+    return request.get("/commodity/searchByName", params);
 };
 export const searchByComNameUser = <T>(params?: any): Promise<T> => {      //查找商品通过名字
     console.log(params)
     return request.get("/commodity/mohu", params);
 };
 export const searchByComNameFail = <T>(params?: any): Promise<T> => {      //查找商品通过名字
-    params = JSON.stringify(params)
-    console.log(params)
-    return request.post("/commodity/searchByNameFailed/", params);
+    return request.get("/commodity/searchByNameFailed", params);
 };
 export const MerchantRecode = <T>(params?: any): Promise<T> => {  //商家修改密码
     params = JSON.stringify(params)
@@ -109,42 +104,36 @@ export const logOut = <T>(): Promise<T> => {                    //退出登录
     return request.get("/merchant/Logout");
 };
 export const userOrders = <T>(params?: any): Promise<T> => {  //用户查询订单
-    // params = JSON.stringify(params)
     return request.get("/orders/userget", params);
 };
 export const deleteCart = <T>(params?: any): Promise<T> => {  //删除购物车中的一行
     params = JSON.stringify(params)
     console.log(params)
-    return request.post("/shoppingcart/deleteaclass", params);
+    return request.post("/shoppingcart/deleteaclassNew", params);
 };
 export const updateOrder = <T>(params?: any): Promise<T> => {  //更新订单
     params = JSON.stringify(params)
-    console.log(params)
     return request.put("/orders/usersUpdateOrders", params);
 };
-export const orderRate = <T>(params?: any): Promise<T> => {                 //排序评价
+export const orderRate = <T>(params?: any): Promise<T> => {    //排序评价
     return request.get("/reviews/watchRating", params);
 };
 export const userOrdersBy = <T>(params?: any): Promise<T> => {  //用户查询订单
     return request.get("/orders/UserSearchOrders", params);
 };
 export const merchantOrdersBy = <T>(params?: any): Promise<T> => {  //商家查询订单
-    // params = JSON.stringify(params)
     return request.get("/orders/MerchantSearchOrders", params);
 };
 export const merchantOrders = <T>(params?: any): Promise<T> => {  //商家查询订单
-    // params = JSON.stringify(params)
     return request.get("/orders/merchantget", params);
 };
 export const getReviewsByCom = <T>(params?: any): Promise<T> => {  //查询商品评论
-    console.log(params)
     return request.get("/reviews/watchreviews", params);
 };
 
 
 //李超
 export const geruser = <T>(params?: any): Promise<T> => {
-
     return request.get("/users/getOneByPhone/" + params);
 };
 export const userupdate = <T>(params?: any): Promise<T> => {

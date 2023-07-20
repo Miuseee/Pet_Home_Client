@@ -1,7 +1,6 @@
 <template>
     <div>
         <el-form :inline="true" :model="failedSearch" class="demo-form-inline">
-
             <el-form-item>
                 <el-input v-model="failedSearch" placeholder="请输入商品名称搜索..."></el-input>
                 <el-button type="primary" @click="Search">搜索</el-button>
@@ -14,7 +13,7 @@
             <el-table-column prop="description" label="商品描述"></el-table-column>
             <el-table-column label="操作">
                 <template #default="{ row }">
-                    <el-button type="text" size="mini" @click="">编辑</el-button>
+                    <el-button type="text" size="mini" @click="editItem(row)">编辑</el-button>
                     <el-button type="text" size="mini" @click="deleteItem(row)">删除</el-button>
                     <el-button v-if="isUpload === 1 ? true : false" @click="uploadImage(row)">上传图片</el-button>
                     <el-button v-if="isUpload === 0 ? true : false" @click="showImage(row)">
@@ -58,9 +57,9 @@
             </span>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button @click="dialogVisible = false">返回</el-button>
                     <el-button type="primary" @click="readyToUpload">
-                        返回
+                        提交
                     </el-button>
                 </span>
             </template>
@@ -81,7 +80,7 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editDialogVisible = false">取消</el-button>
+                <el-button @click="editItem">取消</el-button>
                 <el-button type="primary" @click="saveItem">保存</el-button>
             </span>
         </el-dialog>
@@ -92,7 +91,7 @@
 import { reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { onMounted } from 'vue'
-import { getWaitComInfo, addImage, deleteCommodity, searchByComNameFail, getImg } from '@/axios/api'
+import { getWaitComInfo, addImage, deleteCommodity, searchByComNameFail, getImg, updateCommodity } from '@/axios/api'
 import { UploadFilled } from '@element-plus/icons-vue'
 let failedSearch = ref("");
 let isUpload = ref(1)
@@ -110,10 +109,9 @@ onMounted(async () => {
         const res: any = await getWaitComInfo<string>({
             params: {
                 page: 1,
-                pageSize: 5,
+                pageSize: 20,
                 merchantID: localStorage.getItem("id")
             }
-
         })
         if (res.code === 5002) {
             loading.value = false
@@ -153,11 +151,22 @@ const formData = reactive({
     breedname: '',
     description: ''
 });
+
+const editItem = (item: Item) => {
+    editFormData.name = item.name;
+    editFormData.price = item.price;
+    editFormData.breedname = item.breedname;
+    editFormData.description = item.description;
+    editFormData.commodityID = item.commodityID
+    editDialogVisible.value = true;
+};
+
 const editFormData = reactive({
     name: '',
     price: 0,
     breedname: '',
-    description: ''
+    description: '',
+    commodityID: 0
 });
 
 const editDialogVisible = ref(false);
@@ -181,12 +190,30 @@ const saveItem = () => {
     }
     const index = items.findIndex(item => item.name === editFormData.name);
     if (index !== -1) {
-        items[index].name = editFormData.name;
-        items[index].price = editFormData.price;
-        items[index].breedname = editFormData.breedname;
-        items[index].description = editFormData.description;
-        editDialogVisible.value = false;
-        ElMessage.success('商品更新成功');
+        updateCommodity<string>({
+            commodityName: editFormData.name,
+            merchantID: localStorage.getItem('id'),
+            gender: editFormData.description,
+            price: editFormData.price,
+            breedName: editFormData.breedname,
+            commodityID: editFormData.commodityID,
+            sure: 1
+        }).then((res: any) => {
+            console.log(res);
+            if (res.code === 4001) {
+                editDialogVisible.value = false;
+                ElMessage.success('商品更新成功');
+                items[index].name = editFormData.name;
+                items[index].price = editFormData.price;
+                items[index].breedname = editFormData.breedname;
+                items[index].description = editFormData.description;
+            }
+            else {
+                ElMessage.error('商品删除成功');
+            }
+        })
+
+
     } else {
         ElMessage.error('找不到该商品');
     }
@@ -253,8 +280,12 @@ const Search = () => {
     else {
         localStorage.getItem('id');
         searchByComNameFail<string>({
-            merchantID: localStorage.getItem('id'),
-            commodityName: failedSearch.value
+            params: {
+                page: 1,
+                pageSize: 8,
+                merchantID: localStorage.getItem('id'),
+                name: failedSearch.value
+            }
         }).then((res: any) => {
             if (res.code === 5001) {
                 ElMessage({
@@ -265,11 +296,11 @@ const Search = () => {
                     if (index >= items.length) {
                         items.push({ name: '', price: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
                     }
-                    items[index].name = element.commodityName
-                    items[index].price = element.price
-                    items[index].breedname = element.breedName
-                    items[index].description = element.gender
-                    items[index].commodityID = element.commodityID
+                    items[index].name = element.CommodityName
+                    items[index].price = element.Price
+                    items[index].breedname = element.BreedName
+                    items[index].description = element.Gender
+                    items[index].commodityID = element.CommodityID
                 });
                 let len = items.length
                 for (let i = res.data.length; i < len; i++) {

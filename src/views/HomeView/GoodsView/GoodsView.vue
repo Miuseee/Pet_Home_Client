@@ -79,13 +79,10 @@ onMounted(async () => {
     try {
         const res1: any = await getComName<string>(localStorage.getItem('commodityID'));
         data.value = res1.data;
-
         const res2: any = await getBreedName<string>(data.value.breedID);
         data.value.breedName = res2.data;
-
         const res3: any = await getImg<string>(data.value.commodityID);
         data.value.imgUrl = res3.data;
-
         const res4: any = await getReviewsByCom<string>({
             params: {
                 id: localStorage.getItem('commodityID'),
@@ -94,13 +91,19 @@ onMounted(async () => {
             }
         });
         if (res4.code === 5001) {
-            console.log(res4.data)
             review.value = res4.data;
             avg.value = res4.data[0].avg;
             avg.value = parseFloat(avg.value.toFixed(1));
             totalPage.value = res4.data[0].count;
             reviews.value = res4.data[0].orderCount
             loading.value = false
+        }
+        else {
+            totalPage.value = 0
+            avg.value = 0
+            review.value = [];
+            loading.value = false
+            reviews.value = 0
         }
 
 

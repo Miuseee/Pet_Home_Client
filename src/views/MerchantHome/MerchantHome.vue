@@ -46,7 +46,6 @@
                                 </template>
                                 <el-menu-item-group title="商品评分">
                                     <el-menu-item index="1-1" @click="gotoChart">已上架商品评分</el-menu-item>
-                                    <el-menu-item index="1-2">item two</el-menu-item>
                                 </el-menu-item-group>
                             </el-sub-menu>
                         </el-menu>

@@ -1,5 +1,6 @@
 <template>
-    <el-radio-group v-model="page">
+    <NavBar></NavBar>
+    <el-radio-group v-model="page" style="position: absolute;left: 42%;top: 13%;">
         <el-radio label="1">个人信息中心</el-radio>
         <el-radio label="2">修改密码</el-radio>
         <el-radio label="3">收货地址</el-radio>
@@ -31,7 +32,7 @@
             <el-button type="primary" @click="editt">保存</el-button>
         </span>
     </el-dialog>
-    <div v-if="page == '2'" class="userupdatepassword">
+    <div v-if="page == '2'" class="userupdatepassword" style="position: absolute;top: 20%;left:41%">
         <div class="step">
             <el-steps direction="horizontal" :active="step">
                 <el-step title="手机验证" />
@@ -47,7 +48,7 @@
                 </el-form-item>
                 <el-form-item label=" " prop="verificationCode">
                     <el-input placeholder="请输入验证码" v-model="formData.verificationCode"></el-input>
-                    <el-button type="primary" :disabled="isSendingCode" @click="sendVerificationCode">
+                    <el-button class="vertify" type="primary" :disabled="isSendingCode" @click="sendVerificationCode">
                         {{ isSendingCode ? `${countdown}s 后重新获取` : '获取验证码' }}
                     </el-button>
                     <el-button class="vertify" @click="vertifyCode">
@@ -77,7 +78,8 @@
         </div>
     </div>
     <div class="reset-password">
-        <div class="userAddress info" v-if="page == '3'">
+        <div class="userAddress info" v-if="page == '3'"
+            style="position: absolute;margin-top: 200px;margin-left: 300px;width: 1200px;">
             <el-form :model="insertData" inline>
                 <el-form-item label="收件人">
                     <el-input v-model="insertData.recipientName" placeholder="请输入收件人"></el-input>
@@ -135,6 +137,7 @@
 </template>
   
 <script setup lang="ts">
+import NavBar from '@/components/NavBar.vue';
 import { onBeforeMount, ref, reactive } from 'vue';
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus';
 import { phoneVertify, geruser, getaddress, deleteaddress, insertaddress, updateaddress, userres, userupdate } from '@/axios/api';
@@ -165,7 +168,6 @@ const formData = ref({
     merchantID: ''
 
 });
-
 const reset = () => {
     let judgePassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/
     let judge = judgePassword.test(formData.value.newPassword)
@@ -187,14 +189,13 @@ const reset = () => {
         formData.value.newPassword = ''
         formData.value.renewPassword = ''
     }
-
-    if (judge && repetition == false && !dwadd) {
+    if (judge && repetition === false && !dwadd) {
         console.log('wocaonimsdawd')
         let awd: boolean
         console.log(formData)
         userres<string>({
             password: formData.value.newPassword,
-            phoneNumber: formData.value.phone,
+            userID: localStorage.getItem("userID"),
         })
             .then((res: any) => {
                 if (res.code = "1") { awd = true; }
@@ -237,13 +238,12 @@ const sendVerificationCode = () => {//用户修改密码手机验证
     }, 1000);
     phoneVertify<string>(formData.value.phone)
         .then((res: any) => {
-            code.value = '1'
+            code.value = res
             console.log(res)
-            console.log(code.value)
-            console.log(code.value)
+            ElMessage.success('验证码发送成功');
         })
     setTimeout(() => {
-        ElMessage.success('验证码发送成功');
+
     }, 1000);
 };
 const editItem = (item: any) => {
@@ -255,9 +255,6 @@ const editItem = (item: any) => {
     editDialogVisible.value = true
 };
 const editt = () => {
-
-    console.log(editFormDatauser.value)
-
     userupdate<string>(editFormDatauser.value).then((res: any) => {
         if (res.code = '4001') {
             ElMessage.success("修改成功")
@@ -319,7 +316,7 @@ const deleteItem = (item: any) => {
         })
 
 };
-let phone = '18721690364'
+let phone = localStorage.getItem("phone")
 onBeforeMount(() => {//获取用户信息?
     step.value = '1'
     page.value = '1'
@@ -328,9 +325,9 @@ onBeforeMount(() => {//获取用户信息?
             user.value = res.data
             editFormDatauser.value = res.data
             insertData.userID = res.data.userID
-            console.log(editFormDatauser)
+
         })
-    let id = '14'
+    let id = localStorage.getItem("userID")
     getaddress<string>(id)
         .then((res: any) => {
             items.value = res.data
@@ -338,6 +335,7 @@ onBeforeMount(() => {//获取用户信息?
 })
 const vertifyCode = () => {//验证验证码
     if (code.value == formData.value.verificationCode && (formData.value.phone == phone)) {
+        ElMessage.success("验证成功")
         step.value = '2'
     }
     else {
@@ -347,5 +345,62 @@ const vertifyCode = () => {//验证验证码
 }
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+::v-deep .el-header {
+    position: relative;
+    width: 100%;
+    background: rgb(149, 182, 229);
+    color: rgb(94, 112, 140);
+    min-width: 1000px;
+
+    .navbar {
+        position: absolute;
+        top: 30%;
+        width: 100%;
+        height: 30px;
+
+        .navbarLeft {
+            width: 92%;
+
+            .userName {
+                margin-left: 20px;
+            }
+        }
+
+        .navbarRight {
+            width: 8%;
+        }
+
+        .navbarRight {
+            cursor: pointer;
+        }
+    }
+
+}
+
+.userinfo {
+    position: absolute;
+    width: 1800px;
+    left: 20%;
+    top: 20%;
+
+    // transform: translateX(-50%);
+    .edit {
+        position: absolute;
+        bottom: -14%;
+    }
+}
+
+.step1 {
+    width: 600px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .vertify {
+        margin-top: 30px;
+    }
+}
+</style>
 

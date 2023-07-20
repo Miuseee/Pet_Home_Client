@@ -1,7 +1,6 @@
 <template>
     <div>
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
-
             <el-form-item>
                 <el-input v-model="formInline" placeholder="请输入商品名称搜索..."></el-input>
                 <el-button type="primary" @click="Search">搜索</el-button>
@@ -15,7 +14,6 @@
                 <el-input v-model="formData.price" placeholder="请输入商品价格"></el-input>
             </el-form-item>
             <el-form-item label="商品类别">
-                <!-- <el-input v-model="formData.breedname" placeholder="请输入商品类别"></el-input> -->
                 <el-select v-model="formData.breedname" class="m-2" placeholder="Select">
                     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
@@ -71,7 +69,9 @@
                     <el-input v-model="editFormData.price" placeholder="请输入商品价格"></el-input>
                 </el-form-item>
                 <el-form-item label="商品类别">
-                    <el-input v-model="editFormData.breedname" placeholder="请输入商品类别"></el-input>
+                    <el-select v-model="editFormData.breedname" class="m-2" placeholder="Select">
+                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="商品描述">
                     <el-input v-model="editFormData.description" placeholder="请输入商品描述"></el-input>
@@ -292,9 +292,16 @@ const Search = () => {
     else {
         localStorage.getItem('id');
         searchByComName<string>({
-            merchantID: localStorage.getItem('id'),
-            commodityName: formInline.value
+            params: {
+                page: 1,
+                pageSize: 8,
+                merchantID: localStorage.getItem('id'),
+                name: formInline.value
+            }
+
+
         }).then((res: any) => {
+            console.log(res);
             if (res.code === 5001) {
                 loading.value = false
                 ElMessage({
@@ -305,11 +312,11 @@ const Search = () => {
                     if (index >= items.length) {
                         items.push({ name: '', price: 0, status: 0, description: '', breedname: '', merchantID: 0, commodityID: 0 });
                     }
-                    items[index].name = element.commodityName
-                    items[index].price = element.price
-                    items[index].breedname = element.breedName
-                    items[index].description = element.gender
-                    items[index].commodityID = element.commodityID
+                    items[index].name = element.CommodityName
+                    items[index].price = element.Price
+                    items[index].breedname = element.BreedName
+                    items[index].description = element.Gender
+                    items[index].commodityID = element.CommodityID
                 });
                 let len = items.length
                 for (let i = res.data.length; i < len; i++) {
